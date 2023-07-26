@@ -1,2 +1,2 @@
-# improving_Theoric_statistic
-I aim to improve my theorical statistic knowledge with this project. It's a kaggle project with my additions and comments. It will give you an idea about how do we use the libraries, how do they work, and some intermidiate knowledge of statistics.
+# Teorik İstatistik Bilgilerimi Geliştirmek
+Bu projede, teorik istatistik bilgilerimi geliştirmeyi hedefliyorum. internetten bulduğum bir Kaggle projesi olarak başlayacak ve üzerine eklemeler ve yorumlar yaparak ilerleyeceğim. Bu proje, kütüphanelerin nasıl kullanıldığı, nasıl çalıştığı ve istatistik alanında orta düzeyde bilgi sağlayacaktır.
