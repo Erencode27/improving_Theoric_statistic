@@ -1,0 +1,1080 @@
+Merhabalar Ben Eren Demir Yıldız Teknik Üniversitesi İstatistik 3. sınıf öğrencisiyim. Makine öğrenmesi ile diyabet üzerine bir proje yaptım. Veriyi kaggle üzerinden buldum. İnternetten bakarak gittiğim bir başka makine öğrenmesi projesi ve istatistik bilgilerimin birleşimi sonucu kadınlardaki Diyabet görülme oranları ve sebepleri hakkında bazı çıkarımlarımız oldu.
+
+Datasetimiz,target(bağımsız değişkenimiz) de dahil olmak üzere toplam 9 sütundan oluşmaktadır. BunlarPregnancies,Glucose,BloodPressure,SkinThickness,Insulin,BMI,DiabetesPedigreeFunction,Age,Outcome'dır. Açıklamam gereken 2 tane sütun var bunlar BMI ve DiabetesPedigreeFunction. BMI= Body mass index yani vücut kitle index'i dir. Kişinin boyuna göre kilo oranıdır, yağ oranıyla alakalıdır. Diğeri ise DiabetesPedigreeFunction, bu datasetini bulduğum kaynakta şu şekilde aktarılmaktadır; yüzdesel olarak ailede görülen diyabet oranı.
+
+Size birazda data neden önemli. İstatistik neden önemli bunlardan bahsetmek istiyorum. İstatistik ve veri hayatımızı öyle yönlendiriyor ki, sizin bir konuyu, mesela bu projeyi nasıl daha iyi, sıkılmadan ve akılda kalıcak şekilde okuyabileceğinizi ölçümleyebilir ve bu verilerin de bilgi yığınına tuttuğu ışık doğrultusunda kendini geliştiren bir proje anlatımı yapabilirim. Mesela bu paragrafı belki 1 paragraf sonra koysaydım okuyucuyu yakalayamayacaktım ve odak, öğrenim gibi değerler daha düşük olacaktı. Belki de 1 paragraf önce koymadığımdan dolayı çoktan %10 ilgi kaybetmişimdir, kim bilir :)
+ihtiyacımız olan 2 şey var. Veriyi fiziksel veya sanal olarak elde etmemiz lazım. Mesela bu proje için bir memnuniyet testi yapmaya karar verdik ve kullanıcılardan projenin öğreticilik ve akıcılığı hakkında bilgi almak istiyoruz diyelim. Elimizde 2 seçenek var; bunlardan biri proje sonunda veya birkaç yerde proje hakkında geri dönüşler alabiliriz. Veya daha güvenilir sonuçlar vericek şekilde kamera erişiyle kullanıcıların beden hareketlerini ,özellikle gözlerini, inceleyip bir çıkarım yapabiliriz.Bu sayede kişinin hissettiği şeyleri farkında bile olmadan yapıyorken biz bunların neler olduğunu ve sebeplerini bilebiliriz. İşte bu verinin önemiydi. Bunların işlenmesi bilgisayara öğretilmesi, aralarındaki ilişkilerin bulunması ise makine öğrenmesi ile alakalıdır. Aralarında hiçbir bağlantı olmadığını düşündüğümüz yerlerde, bilgisayarlar bize bunların direkt etken olduğunu söylebildiği bir dünya. İnsan hatasını komple ekarte etmiş oluyoruz. Peki makine öğrenmesi hiç hata yapmıyor mu? Elbette yapıyor mesele de tam burda başlıyor. Üzerinde yüzlerce kişinin çalışabildiği, kuralların dışına asla çıkmayan bir insan ürettiğimizi düşünün.Daha iyi duruma getirilebilir. Burdaki sorunların devam etmesi bizim bilgimizin sınırlarından dolayı kaynaklanıyor ama inanın yeterince fazla şey söylüyor. 
+
+KOD KISMI
+[1] Projemize çalışma dizinimizi kontrol ederek başlıyoruz. Ardından projemize ilerde kullanıcağımız fonksiyonları tanımlamak için kütüphaneleri aktarıyoruz. 
+[2] Burda ise importlama işlemi yapıp importladığımız sürümleri kullanıcıya gösteriyoruz. Bu sonradan oluşabilecek uyumsuzlukları önlemek için. Ardından os.listdir ile çalışcağımız dizine gidip içindeki klasörleri listeletiyoruz.
+[3] Ardından sıkça kullanıcağımız algoritma modellerini tanımlıyoruz. Bunlar içinde makine öğrenmesi için çok önemli olan svm, tree bayes ve bunları birleştirip kullanmak için ensemble vb. modelleri ekliyoruz.
+
+burda ise importladığımız kütüphaneler hakkında kısa bir bilgilendirme var; SVM (Support Vector Machines): SVM, sınıflandırma ve regresyon görevleri için kullanılan güçlü bir algoritmadır. Verileri sınırlayıcı hiper düzlemlerle ayırarak sınıflandırma yapar. SVM, doğrusal ve doğrusal olmayan (kernel trick) veri setlerinde de etkilidir.
+
+Decision Trees (Karar Ağaçları): Decision Trees, veri setlerini ağaç yapısı şeklinde bölen ve kararlar veren algoritmalardır. Her bir iç düğüm, bir özellikle ilgili bir karar yapısı oluşturur. Bu ağaçlar veri setini bölerek sınıflandırma yapar.
+
+Linear Models (Doğrusal Modeller): Doğrusal modeller, veriyi birinci dereceden denklemlerle sınıflandırmak veya tahmin etmek için kullanılır. En basit örneğiyle, verileri düz bir çizgi ile ayırmak veya regresyon yapmak için kullanılırlar.
+
+K-Nearest Neighbors (K-En Yakın Komşu): K-NN algoritması, yeni bir örneğin etiketini belirlemek için en yakın komşularının etiketlerine bakar. Örneğin, bir noktanın sınıfını komşularının sınıflarına göre belirler.
+
+Naive Bayes: Naive Bayes algoritması, Bayes teoremini temel alan istatistiksel bir sınıflandırma yöntemidir. "Naive" (Saf) terimi, her özelliğin bağımsız olduğu varsayımına dayanır.
+
+Ensemble Methods (Kollektif Yöntemler): Ensemble algoritmaları, birden fazla sınıflandırıcıyı bir araya getirerek daha güçlü bir model oluşturur. Örnekler arasında Random Forest, AdaBoost, Bagging ve Gradient Boosting yer alır.
+
+Discriminant Analysis (Ayırıcı Analiz): Ayırıcı analiz, farklı sınıflar arasındaki farkları anlamak ve yeni verileri sınıflandırmak için kullanılır. İki sınıflı veya çok sınıflı problemlerde kullanılabilir.
+
+Gaussian Process (Gauss Süreci): Gauss süreçleri, belirsizlikle çevrili verileri modellemek için kullanılır. Regresyon ve sınıflandırmada yaygın olarak kullanılır.
+
+XGBoost: XGBoost, eXtreme Gradient Boosting'in kısaltmasıdır. Gradient Boosting yöntemini geliştirerek daha yüksek performanslı bir ensemble algoritması sunar. Veri setinin karmaşıklığına uyum sağlar ve hızlıdır.
+
+Bu kütüphanelerde yer alan algoritmalar, veri setlerinin özelliklerine ve problemlerin gereksinimlerine bağlı olarak tercih edilir. Hangi algoritmanın ne zaman kullanılması gerektiği, veri analizine ve deneyime dayalı bir karardır.
+
+OneHotEncoder: Kategorik değişkenleri sayısal verilere dönüştürmek için kullanılır. Her bir kategoriye ait yeni sütunlar oluşturur ve 0 veya 1 ile temsil edilen binary değerler içerir.
+
+LabelEncoder: Kategorik değişkenleri sıralı sayısal değerlere dönüştürmek için kullanılır. Her bir kategoriye benzersiz bir sayı atanır.
+
+feature_selection: Bu modül, özellik seçimini gerçekleştirmek için kullanılır. Veri setindeki önemli özellikleri seçmek ve gereksiz özellikleri çıkarmak için kullanılan işlevler ve sınıflar içerir.
+
+model_selection: Bu modül, model eğitimi, değerlendirmesi ve seçimi için kullanılır. Veri setini eğitim ve test kümelerine ayırmak, çapraz doğrulama yapmak ve en iyi parametreleri bulmak için kullanılan işlevler ve sınıflar içerir.
+
+metrics: Bu modül, model performansını değerlendirmek için kullanılır. Doğruluk, hassasiyet, kesinlik, F1 skoru gibi sınıflandırma metriklerini hesaplamak ve regresyon performansını ölçmek için kullanılan işlevler ve sınıflar içerir.
+
+Bu kütüphanelerde bulunan fonksiyonlar ve sınıflar, veri ön işleme, model oluşturma ve model değerlendirmesi aşamalarında sıkça kullanılır. Hangi fonksiyonun veya sınıfın ne zaman ve nasıl kullanılacağı, projenizin gereksinimlerine ve hedeflerine bağlıdır.
+
+%matplotlib inline:Jupyter Notebook veya IPython gibi ortamlarda hücrelerde yazdırdığımız kodun, grafik çıktılarının direkt olarak derleyici üzerinde çalışmasını ve sonucu bizim görmemizi sağlar. Bu kodu kullanmadan da bir çıktı görebilir miyiz? evet ama bu sefer başka bir pencere de görürüz.
+
+mpl.style.use('ggplot'): Bu kod ise çizdirilen grafiğin stilinin R dilindeki ggplot gibi olmasını sağlar.Kısaca görünüş ayarlamasıdır.
+
+sns.set_style('white'): Bu kod grafiklerin beyaz bir arka planda çizilmesini sağlar. 
+
+
+pylab.rcParams['figure.figsize'] = 12,8:  matplotlib.pyplot kütüphanesi kullanılarak oluşturulan grafiklerin varsayılan olarak hangi boyutlarda görüntüleneceğini ayarlamaya yarar. 
+
+[5] Bu hücrede ise verimizi pd.read_csv ile okuduk ve 2 ayrı değişken olarak aynı veriyi kaydettik. data_raw ve data_val olarak.  data1 diye bir yedek tutarız. Bunu data1 = data_raw.copy(deep= True) ile yaparız. deep =True demezsek kopyada yaptığımız değişiklikler orjinal veriye de geçer. data_cleaner listesi, veri temizleme ve işleme işlemleri yaparken birden fazla DataFrame üzerinde çalışmayı daha düzenli ve kolay hale getirmek amacıyla oluşturulmuştur.Bir nevi müsvedde kağıdı oluşturuyoruz kendimize ve o kağıt üzerinde istediğimiz gibi veriye eklemeler çıkartmalar ve yeni değişkenler atayabiliyoruz. 
+
+Ardından veri hakkında bilgi sahibi olmak için .info() ve sample(10) kodlarını kullanırız. info bize  kaç tane satır ve sütun olduğunu, veri tipini, kaç tane değer olduğunu söyler ve bunun gibi daha bir sürü bilgi verir. sample(10) ile ise verinin rastgele 10 kayıt çıktısını alırız.
+
+Ayrıca bu hücrede çok önemli bir şey yapıyoruz. Makine öğrenmesinde yapmamız gereken ilk olay. Elimizdeki veri setini alıp train ve test olarak bölmek. burda from sklearn.model_selection import train_test_split ile fonksiyon aktarırız. fonksiyon burda 2 değişken alır bizden  x ve y. X bağımsız değişkenlerdir. Y ise bağımlı değişkendir(target). Burda x ve y yi seçtikten sonra bilgisayara şu kodlar ile gireriz.X = data_raw.drop(columns=["Outcome"]) y = data_raw["Outcome"] x için bağımsız değişken için target(bağımlı değişken) dışındaki her şey olduğu için data_raw.drop(columns=['Outcome']) dedik. y için ise sadece outcome yani target değişkeni istediğimizden y = data_raw["Outcome"] yazdık. 
+
+Ardından X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+kodunu yazdık. Elimizdeki bağımlı ve bağımsız değişkenleri eğitim ve test olarak ayırdık.x ve y parametreler olarak tanımladık.  test_size ile %80 eğitim ve %20 eğitilen modelin test edilişini belirlemiş olduk. Burda validation kullanmadık. random_state ile ise bir seed vermiş olduk modele, bu bir rastgelelik ölçütü demek oluyor. Yani 42 koduyla modeli kar ve hep aynı şekilde rastgele gelsin değerler.
+
+
+[6] Burda ise  train ve test  kısmında kaç tane 0(missing) değeri var onu öğreniyoruz. Ardından .describe() ile ise veri seti hakkında istatistiksel olarak bir çıkarım yapıyoruz. Standart sapma değeri, ortalama vs gibisinden değerleri öğreniyoruz. Bize veriyle alakalı daha iyi fikir verir.
+
+[7] Burda yaptığımız 2 işlem vardır. İlki verimizde bulunan bağımsız değişkenleri ilerde sorgu için kullanıcağız ama verimiz her sütunda sürekli değişken. Yani koşul koymamız için belirli değerleri girmemiz gerekiyor bu ise belirli bir tıbbi bilgi gerektiriyor. Bununla uğraşmamak için ben ortalama değerleri referans alıp eğer ortalama değerden büyükse bu değer 1 değilse 0 gibisinden sürekli bir değişkeni binary 1 veya 0 , var yok gibi iki değişkene indirgeyebildim ve şimdi elimizdeki veri sorgu yapmaya daha elverişli bir veri oldu if else yapısına daha iyi uyuyor.
+
+2. yaptığımız olay ise burda 0 olan değerleri mod veya medyana göre doldurma işlemi. Böylece modelimiz gereksiz hatalar ve yanılgılarla uğraşmayacak. Bazı yerde mod bazı yerde medyan kullandım. Bunun sebebi ise Eksik değerleri doldururken moda (mode) mu yoksa medyan (median) mı kullanmanız gerektiği, verinin dağılımına ve eksik değerlerin dağılımına bağlı olarak değişebilir. Genel olarak aşağıdaki yaklaşımları göz önünde bulundurabilirsiniz:
+
+Moda (Mode):
+
+Kategorik verilerde eksik değerleri doldururken moda kullanabilirsiniz. Çünkü moda, en sık görülen değeri temsil eder.
+Özellikle nominal verilerde moda tercih edilebilir.
+Medyan (Median):
+
+Sayısal (nicel) verilerde eksik değerleri doldururken medyan kullanabilirsiniz. Medyan, ortanca değerdir ve veri dağılımına karşı daha dayanıklıdır.
+Özellikle aykırı değerlerin olduğu durumlarda medyan tercih edilebilir.
+Hangisini kullanmanız gerektiği veri setinizin özelliklerine bağlıdır. Aşağıda bazı senaryoları inceleyebiliriz:
+
+Eğer bir sayısal değişkenin dağılımı normal ise ve aykırı değerler önemli değilse, ortalama (mean) ve medyan arasında pek fark yoksa ortalama değeri kullanabilirsiniz.
+Eğer sayısal bir değişkenin dağılımı normal değilse ve aykırı değerler bulunuyorsa, medyan daha güvenilir bir seçenek olabilir.
+Eğer bir kategorik değişkenin eksik değeri varsa, moda kullanabilirsiniz çünkü kategorik değişkenlerde ortalama veya medyan kullanmak anlamlı değildir.
+Ayrıca veri setinizin büyüklüğü, eksik değerlerin oranı ve diğer özellikleri de hangi yöntemi kullanmanız gerektiğini etkileyebilir. Eğer belirli bir yöntemi tercih ediyorsanız, bu tercihinizi mantıklı bir şekilde açıklamak ve analizinizi doğru bir şekilde yapmak önemlidir.
+
+Devamında model adında logisticregression() fonksiyonunu kullanıcağımız bir değişken oluşturuyoruz ve bunu .fit() ile  X_train, y_train olacak şekilde hem bağımlı hem de bağımsız değişkenleri modele uyarlanır. X_train bilgileri ile y_train bilgilerini tahmin etmeyi öğrenir. accuracy_of_preg_dia = model.score(X_test, y_test) bu kod satırı ile modelin tahmin tutarlılığı skorunu öğreniriz. 
+
+Ardından sırasıyla hamilelik ve diyabet, kan basıncı- insulin ve diyabet, glukoz ve diyabet, insulin ve diyabet, glukoz-insulin ve diyabet, deri kalınlığı- vücut kitle indeksi ve diyabet verileri bağımlı ve bağımsız değişken olarak verildiğinde modelin eldeki veriler ışığında sonucu ne kadar iyi tahminlediğini gösterir. Tam olarak değişkenler arasındaki ilişki hakkında kesin bir yorum yapılamaz(korelasyon) ama bize bir fikir verebilir.Aradaki fark büyükken ve küçükkenki korelasyon aynı diyemeyiz. Sonuçta ilişkisi olan değerler daha tutarlı olucaktır ve modelin bilme olasılığı daha yüksek olucaktır. 
+
+Ardından hem makine öğrenmesi için önemli bir olgu olan hem de modelin performansını bize sayısal olarak sunacak, daha iyi anlamamızı sağlayacak olan confusion matrix üzerinde çalışacağız. 
+
+Evet burası çok uğraştığım, birkaç saatimi alan bir kısım;
+
+[11] Bu kısımda birden fazla confusion matrix oluşturup her bir özellik bazlı olarak modelin tahmin yeteneğine ve başarısına bakıcağız. Burda confusion matrix'in biraz amacını ve doğal kullanım yönteminin dışına çıkmış olabilirim. Tercih edilip edilmemesi hakkında bir fikrim yok. Ama yaptığım şey normalde şuydu tıpkı bir korelasyon analizi yapar gibi bir ya da iki bağımsız değişken ve bir bağımlı değişken arasındaki ilişkiyi ortaya çıkartmaktı. Mesela confusion matrix for pregnancies on diabetes, confusion matrix for bloodpressure and insulin on diabetes gibi. Ve böyle birkaç şekilde daha gidiyor. Bu bize kesin bir korelasyon ilişkisi vermez, sadece modelin tahmin yüzdesinin bu iki değişken üzerinde nasıl olduğunu verir, evet. Ama sonuçta rastgeleliği aşırı fazla aralarında hiçbir alaka olmayan veriler üzerinde modelin daha tutarlı tahmin yapması beklenemez. Dolaylı olarak bize ilişki ve önem bazında bir bilgi verir.
+
+Burda yaptığım hata değişken ismini ve print açıklamasını değiştirince her şeyi hallettiğimi sandım. Ama model tüm sütunlar üzerinde, sonrasında spesifik olarak rastgele bazı sütunlar üzerinde eğitilmişti. Herhangi bir filtreleme yapmadan bu işlemi yapmak demek aynı işlemi ve  sonucu başlığını değiştirip defalarca çalıştırmak demektir. Sorunu anlamam ve çözmem birkaç saatimi aldı. Daha pratik veya mantıklı bir çözümü olabilir ama ben problemi her bir ayrı confusion matrix için tüm x ve y'lerin başına rakam ekleyip yeni modeller yarattım. Bu şekilde her özellik setinin performansını değerlendirebilirim. İlgilendiğim özelliklerin hangi ölçüde tahmin performansına sahip olduğunu görmek  ve hangi özelliklerin daha iyi tahminler yapabildiğini belirlemek için bu yöntem dediğim gibi kullanışlı olabilir.
+
+Şunu eklemek istedim; bu birden fazla model oluşturup eğitmek fazla maliyetli ve zaman alıyor olabilir. Daha iyi bir yöntem ne olabilir bunun üzerine araştıracağım. Ama proje kapsamından dolayı mı yoksa yaptığım iş hantallığa mı girmiyor bilmiyorum ama model çok hızlı çalıştı yine de.
+
+[12] Bu hücrede ise bir makine öğrenmesi algoritmasının performansını ölçmek için kullanılan en temel 2 olayı yapıyor olacağız; birincisi confusion matrix bunu zaten yukarda yapmıştık ama burda görsel bir model olarak yapılışını göreceğiz. İkincisi ise; ROC eğirisi. Confusion matrix'in mantığını anlaması daha basittir. Çıktı olarak 0 ve 1'lerimiz vardır. Ve etiketlere göre modelin tahmini ve gerçek değerler vardır. Toplamda 4 çıktı çıkar bunlar True positive, True negative, False positive, False negative'dir. Anlamı ise şudur; True modelin doğru bilmesi, False yanlış bilmesi. Positive aranılan özelliğin olması gerçekleşmesi, negative gerçekleşmemesi. Mesela diyabet örneği için gerçekte hastada diyabet yok diyelim, ama model var demiş bu ne demek oluyor; model yanılmış False, hastada hastalık yoktu negative, yani False negative. Bunları [0,0][0,1][1,0][1,1] olarak gösteririz. Örneğin, [0,1] demek hata demektir tip 2 hata olarak bilinir(False negative).Soldaki gerçek değer sağdaki ise modelin tahminidir. 
+
+Bu işlemleri yapmak için gereken kütüphaneleri importluyoruz, sadece hamilelik ve aradığımız özellik olan outcome, diyabet olup olmama, tanımlanır X_preg, y_preg olarak. Klasik X_train, X_test... değişkenleri tanımlanır ve train_test_split() fonksiyonu kullanılarak model oluşturulur.LogisticRegression() kullanılır.Model nesnesi oluşturmamızı sağlar.model_preg
+.fit(X_train_preg, y_train_preg) komutu ile resmen model eğitilir.
+
+y_pred_preg = model_preg.predict(X_test_preg) kodu ile de eğitilen modele tahmin yaptırılır. 
+cm_preg = confusion_matrix(y_test_preg, y_pred_preg) kodu ile confusion matrix oluşturulur.
+
+Ve ardından cm_preg olarak oluşturduğumuz confusion matrix'i görselleştirmeye geçeriz.
+plt.figure(figsize=(6, 4))
+sns.heatmap(cm_preg, annot=True, fmt='d', cmap='Blues')
+plt.xlabel('Tahmin Etiketleri')
+plt.ylabel('Gerçek Etiketler')
+plt.title('Confusion Matrix - Pregnancies on Diabetes')
+plt.show()
+
+sns.heatmap(cm_preg, annot=True, fmt='d', cmap='Blues')
+
+sns.heatmap'e ilk parametre olarak elimizdeki veri tablosu, modeli verilir. Biz burda cm_preg'i verdik. 
+
+annot = True her hücrenin içine sayısal değerleri yazdırmak için kullanılır. Confusion matrix gibi matrislerde hücrelerin içindeki değerler genellikle doğruluk, hata vb. değerlerdir.
+
+fmt='d': annot parametresi True olarak ayarlandığında, hücre içine yazdırılacak sayısal değerlerin formatını belirler. 'd' formatı, sayıları ondalık olarak değil tam sayı olarak yazdırır.
+
+Sonra yaptığımız işlem ise ROC eğrisi kullanmak. 
+
+# ROC eğrisini oluşturma
+y_pred_prob_preg = model_preg.predict_proba(X_test_preg)[:, 1]
+fpr_preg, tpr_preg, _ = roc_curve(y_test_preg, y_pred_prob_preg)
+roc_auc_preg = auc(fpr_preg, tpr_preg)
+
+Burda ilk satır olarak karşımıza şu satır çıkıyor.
+y_pred_prob_preg = model_preg.predict_proba(X_test_preg)[:, 1]
+
+Bu satırı komple ele almamız gerekiyor. Yaptığımız isimlendirme şu anlama gelmektedir. y_pred_prob_preg diyabet olup olmama olasılığının tahmini. Eğer bu tahmin gerçeğe yakınsa yani model eğer iyi bir modelse ROC eğrisi altında kalan alan büyür. Bu alana AUC (Area under the curve)denir, modelimizin performansını ölçmek için kullanılır.
+
+Bu satırda model_preg ile eğitilmiş lojistik regresyon modelini kullanarak test verileri  X_test_preg üzerinde tahmin doğruluğu olasılıklarını elde ediyorsunuz. .predict_proba(X_test_preg) ile her sınıf için tahmin  doğruluk olasılıklarını elde edersiniz. Ancak burada biz sadece pozitif sınıfın (1) olasılıklarını alıyoruz, bu nedenle [:, 1] kullanılır.
+
+fpr_preg, tpr_preg, _ = roc_curve(y_test_preg, y_pred_prob_preg) satırında ise:
+ROC eğrisi çizimi için gerekli olan FPR(False Positive Rate) ve TPR(True Positive Rate)değerlerini hesaplıyoruz. Yani diyabet olanları bilememe ve diyabet olanları bilebilme oranları lazım bize, onları alıyoruz. roc_curve fonksiyonu, tahmin olasılıkları ve gerçek sınıflar kullanılarak bu değerleri hesaplar. 
+
+roc_auc_preg = auc(fpr_preg, tpr_preg) satırında ise:
+Hesaplanan FPR ve TPR değerlerini kullanarak ROC eğrisi altında kalan alanı (AUC) hesaplıyoruz. Bu değer, modelinizin performansını ölçmek için kullanılır. AUC değeri 0 ile 1 arasında bir değer alır;
+yüksek AUC değeri daha iyi bir performansı gösterir.
+Bu kod parçası genel olarak, modelinizin ROC eğrisini ve AUC değerini hesaplayarak modelimizin performansını görsel ve sayısal olarak değerlendirmenizi sağlar.
+
+Hemen altındaki kodda ise yine grafik ayarlama kodlarını görüyoruz:
+plt.plot(fpr_preg, tpr_preg, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc_preg)
+
+lw=2: Çizgi genişliği.
+label='ROC curve (area = %0.2f)' % roc_auc_preg: Eğri için etiket. Burada "roc_auc_preg" değişkeni, ROC eğrisinin altında kalan alanı (AUC) temsil eder ve bu değeri etikete ekler.
+
+label='ROC curve (area = %0.2f)' % roc_auc_preg ifadesindeki area terimi, ROC eğrisinin altında kalan alanı (AUC - Area Under the Curve) temsil eder. ROC eğrisi, farklı kesme noktalarında duyarlılık ve özgüllük arasındaki ilişkiyi gösterir. AUC ise bu eğrinin altında kalan alanı ifade eder ve bir sınıflandırma modelinin performansını özetler.
+
+AUC değeri, 0 ile 1 arasında bir değer alır:
+
+AUC = 1: Mükemmel sınıflandırma performansı. Model, tüm pozitif örnekleri negatiflerden ayırırken, tüm negatif örnekleri pozitiflerden ayırabilir.
+AUC = 0.5: Rastgele tahmin. Modelin performansı rastgele tahmin yapmakla aynı düzeyde.
+AUC < 0.5: Modelin performansı tahmin etmekten daha kötü. Model, pozitif ve negatif örnekleri karıştırıyor veya ters tahmin ediyor.
+Bu nedenle, ROC eğrisi üzerinde AUC değeri, modelin sınıflandırma yeteneğini gösterir. AUC değeri ne kadar yüksekse, modelin performansı o kadar iyidir. Etikette bu AUC değeri de gösterilerek ROC eğrisinin altında kalan alanın nicel bir ölçümü sağlanır.
+
+
+plt.legend(loc="lower right"), ROC eğrisinin altında AUC değerini gösteren açıklamanın, grafik içinde sağ alt köşede ("lower right") görüntülenmesini sağlar. 
+
+Hücre 12 sonlarına doğru ise classification_rep_preg adlı bir değişkene classification_report(y_test_preg, y_pred_preg) fonksiyonunu uyguluyoruz. ve parametre olarak  ilk olarak gerçek verileri, ikinci parametre olarakta modele yaptırdığımız tahmin verilerini veriyoruz. 
+Bu report kodu ile modelin performansıyla alakalı farklı bilgilere erişiriz; recall f-1 score ve dahası gibi. Burda etiketlerden kaynaklı kafa karıştırıcı bir durum oluşmuş olabilir. Onu da kafaları karıştırmadan açığa kavuşturalım:
+Kafa karıştırıcı gibi gelen kısım y_test_preg ile y_pred_preg. Şöyle açıklayalım, başta verimizi 80'e 20 olacak şekilde ayırdık. 80 train - 20 test. Burda y_test_preg orjinal sonuçlar, y_pred_preg ise test verisinin tahminidir. Report fonksiyonuna gerçek sonuçlara kıyas olacak şekilde tahmin verilerini veriyoruz. İlk parametre test verisi, yani cevap anahtarı, ikinci parametre ise tahminlerdir. Burdan performans ölçümü yapılır. Model tahminlerini tutturmuş mu? gibi.
+Burda bize reportun verdiği terimlerin ne anlama geldiğini bilmemiz gerekiyor. Çünkü bize önemli şeyler söylüyor:
+
+-Precision(Kesinlik):Her bir sınıf için gerçek pozitiflerin(True Positives)toplam tahmin pozitiflerine (True Positives + False Positives) oranını temsil eder. Örneğin, 0 sınıfı için diyabet değil kesinlik %65.11, yani modelimizin 0 olarak tahminlediği örneklerin %65.11'inin gerçekte 0 olduğunu gösterir.
+
+-Recall(Duyarlılık):Recall, sınıflandırma problemlerinde kullanılan bir değerlendirme metriğidir ve gerçek pozitif (true positive) örneklerin tüm gerçek pozitif örnekler içindeki oranını ifade eder. Başka bir deyişle, recall, tüm gerçek pozitif sonuçların doğru şekilde tahmin edilme oranını ifade eder. Recall aynı zamanda "duyarlılık" veya "gerçek pozitif oranı" olarak da adlandırılır.
+
+Recall hesaplanırken şu formül kullanılır:
+Recall = True Positives/ True Positives +False Negatives
+
+-F1 Score: Precision ve Recall değerlerinin harmonik ortalamasıdır. Daha yüksek bir F-1 skoru, precision ve recall'in dengeli olduğunu gösterir.
+
+Dengede olması, precision ve recall metriklerinin birbirine yakın ve dengeli olduğunu gösterir. Yani model, pozitif örnekleri hem doğru bir şekilde yakalamada (recall yüksek) hem de bu tahminleri yaparken yanlış pozitif örnekleri minimize etmede (precision yüksek) başarılı bir denge kurmuş demektir.
+yüksek precision, yanlış pozitif tahminlerin az olduğu ve "var" dediği şeylerin çoğunlukla gerçekten var olduğu durumu gösterir.  FP az, True Positive çok.
+
+Yüksek recall ise yanlış negatif tahminlerin az olduğu ve "var" dediği şeylerin gerçekten var olanların büyük bir kısmını yakaladığı durumu ifade eder.
+
+Örneğin, yüksek precision ve düşük recall durumu, modelin pozitif olarak tahmin ettiği örneklerin çoğunun gerçekte pozitif olduğu, ancak gerçek pozitif örneklerin bir kısmını kaçırdığı durumu gösterebilir. Diğer yandan, düşük precision ve yüksek recall durumu, modelin pozitif olarak tahmin ettiği örneklerin çoğunun gerçekte negatif olduğu, ancak gerçek pozitif örnekleri yakalama konusunda daha başarılı olduğu durumu gösterebilir.
+
+F1 Score, bu iki durumun denge noktasını gösterir. Eğer F1 Score yüksekse, modelin precision ve recall arasında denge sağladığı ve hem yanlış pozitifleri hem de kaçırılan pozitifleri minimize etmeye çalıştığı anlamına gelir.
+
+Yüksek Precision ve Düşük Recall: Model, "var" dediği şeylerin büyük bir kısmını doğru tahmin eder, ancak gerçekte var olan bazı örnekleri kaçırabilir. Yani, yanlış pozitif tahminler azdır, ancak yanlış negatif tahminler fazla olabilir. (Hata türü: Yanlış negatif) yani diyabet olanların çoğunu doğru biliyor diyabetleri var diye. Ama bazı diyabet hastalarına da hasta değil deyip kaçırabilir(bu daha az olur).Hasta olmayana hasta deme olayı çok daha fazla. (Bu daha fazla olur.)
+
+Düşük Precision ve Yüksek Recall: Model, gerçekte "var" olan örneklerin büyük bir kısmını yakalar, ancak "var" dediği bazı örnekler gerçekte yok olabilir. Yani, yanlış negatif tahminler azdır, ancak yanlış pozitif tahminler fazla olabilir. (Hata türü: Yanlış pozitif) Model diyabet olanların çoğunu yakalar. Yine hata yapar ama bunda yaptığı hataların miktarı değişiyor. diyabet değil dediği hastalar hasta çıkar(az miktarda). Diyabet hastası dediği insanlar hasta değildir, daha fazla bir şekilde.
+
+Burda önemli olan şey; bizim hangi hata riskini kabul ettiğimizdir. Buna bağlı olarak modeller kullanılır ve hata payları kabul edilebilir veya asla kabul edilemez.
+
+-Support: Her bir sınıfın gerçek veri kümesinde kaç örneğe sahip olduğunu gösterir.
+
+-Macro Avg: Her bir sınıfın ayrı ayrı alınan metriklerinin (precision, recall, f-1 score) ortalamasıdır.
+
+-Weighted Avg: Her bir sınıfın ayrı ayrı alınan metriklerinin sınıfın veri sayısına göre ağırlıklı ortalamasıdır.
+
+
+[13] Bu kod, veri setindeki bağımsız değişkenleri (özellikleri) ve hedef değişkeni (çıktı veya hedef) belirlemek için yazılmıştır.
+
+Target = ['Outcome'] bir sınıflandırma problemi çözmek için kullanılacak olan tahmin edilmek istenen çıktıdır.
+
+data1_x: Bu liste, veri setindeki bağımsız değişkenlerin (özelliklerin) isimlerini içerir. Bu özellikler, sonuçları tahmin etmek için kullanılacak olan girdi değişkenleridir.
+
+data1_x_calc: Bu liste, algoritma hesaplamaları için kullanılan özelliklerin isimlerini içerir. Özellikle, bu özellikler sayısal değerler içerdiğinde ve algoritmalar tarafından doğrudan işlenmeleri gerektiğinde kullanılırlar.
+
+data1_xy: Bu liste, hedef değişkeni ve tüm bağımsız değişkenleri içeren bir liste oluşturur. Bu, daha sonraki işlemlerde belirli değişkenlere kolayca erişmek için kullanışlı olabilir.
+
+Bu kod parçası, belirli bir veri kümesinin özelliklerini ve hedef değişkenini düzenlemek ve daha sonra modelleme süreçlerinde bu değişkenlere kolayca erişmek amacıyla yazılmış olabilir.
+
+
+[15] Bu hücrede ise daha önceden oluşturduğumuz data_cleaner, temiz bir çalışma alanı oluşturmuştuk. my_rho adlı bir değişkenle numpy'de bulunan katsayı(coefficient) fonksiyonunu kullanıyoruz. Bu bize bağımsız değişkenler arasındaki ilişkiyi katsayılar bazında vericek. [0,1] parametresini vermemizin sebebi ise değerlerin 0 ve 1 arasında tutmaktır. aynı işlemi Pregnancies ve Outcome için de pregn_dia adıyla yapıyoruz. Ve ardından Glucose ve Insulin arasındaki ilişki için de. 
+
+print(data1['Outcome'].value_counts()) kodu:
+data1 veri çerçevesinde bulunan 'Outcome' adlı hedef değişkenin sınıf dağılımını sayar. 
+
+[17] Burda korelasyon analizi yapıp bazı sütunlar ile ilgili bilgi edinmek istedim. correlation adında bir değişkenle pandas kütüphanesine ait .corr() ile korelasyon bulunur. Ardından klasik grafik kodları yazılır.Bilmeniz gereken ekstra bir ayarlama:
+
+plt.grid(True) komutu, matplotlib kütüphanesindeki bir grafikte ızgara çizgilerinin görünür hale getirilmesini sağlar.  
+
+[18] Bu hücrede glukoz ve insulin arasındaki katısayı(coefficient) hesaplanır. 0 ve 1 arasında sonuç vermesi sağlanır.
+
+[19] Bu hücrede data1 ve  data_val dataframelerindeki  0 değerleri sayısı öğrenilir. Eğer bir eksik değer (missing value) varsa bunu bilmemiz ve miktarını göz önünde bulundurup ona göre bir aksiyon almamız gerekir. Eğer 0 değerler fazlaysa, ki az olması bile bir sorun, elde ediceğimiz ortalamaları, değerleri komple gerçek değerlerden uzaklaştırır. Bundan kurtulmak için 0 değerlerden kurtulma ve onlara ne yapmamız gerektiğini göreceğiz, ilerde.
+Son olarak data_raw.describe ile ham datamız hakkında da fikir sahibi olmamız sağlanıyor.
+
+[20] data1_x = ile buralara bağımsız değişkenlerin olduğu bir liste oluşturuyoruz. 
+
+print(data1[[x, Target[0]]].groupby(x, as_index=False).mean())
+Bu kod satırı, veri setinizdeki bir değişkenin (x) değerlerine göre gruplandırarak, bu grupların ortalama hedef değeri (Outcome) üzerindeki etkisini göstermeyi amaçlar. İşte bu kodun parametreleri:
+
+data1[[x, Target[0]]]: Bu ifade, data1 veri çerçevesinin içinden sadece x ve hedef değişkenin (Outcome) ilk sütununu seçer. Yani x değişkeni ve hedef değişkenin değerlerini içeren bir alt veri çerçevesi oluşturulur.
+
+groupby(x, as_index=False): Bu ifade, x değişkenine göre veriyi gruplar. as_index=False ise gruplama sonucu indeks sütunu oluşturulmasını engeller, böylece grupların sıralı bir şekilde görüntülenmesini sağlar.
+
+En sonunda ise pd.crosstab() ile çapraz tablolar oluşturulur.Çapraz tablolar, değişkenlerin kategorik değerlerinin kesişimlerini ve bu kesişimlerdeki gözlem sayılarını gösterir.
+sınıflandırma problemlerinde, farklı kategorik değişken değerlerinin hedef değişken üzerindeki etkisini incelemek için kullanılır.
+
+[21] Burda ise elimizdeki nerdeyse tüm veri  target bazlı olarak(diyabet) görselleştirilir. Bazı çıkarımlar yapabilmek için. Grafiklere bakarak yorum yapmak mümkündür.
+
+[22] Burda ise yine bir görselleştirme yapıyoruz. Bu görselleştirmeyi yaparken internetten yardım almam gerekti. Çünkü çok fazla veri olduğundan dolayı grafikteki çizgiler, noktalar birbirinin içine geçiyordu ve hiçbir çıkarım yapılamayan bir tablo veriyordu bize. Etiketler için de aynı şey geçerliydi. Bunu çözmek için grafiği bazı aralıklara bölmek aklıma geldi, veya bir örneklem alıp o örneklem üzerinden görselleştirmek. 
+
+Gerekli kütüphaneleri importladıktan sonra, num_categories = 5 ile verimizi ilerde 5'e bölmek üzere bir parametre ayarladık.
+
+categorize_continuous_column fonksiyonu: Bu fonksiyon, belirli bir sürekli değişkeni belirtilen sayıda kategoriye böler. İşlem sırasında, değişkenin minimum ve maksimum değerleri arasında eşit adımlarla bölmek için bir strateji kullanır. Böldükten sonra, her kategoriye açıklamalı etiketler atanır.
+
+bins = [min_value + i * step_size for i in range(num_categories + 1)]
+satırında ise bölmeleri oluşturuyoruz: min_value'dan başlayacak ve i(i başta 1) ile stepsize çarpılacak mesela min değer 1 max 100 olsun. 1+ 1*20 ile 1-21 arası bir aralık oluşturmuş oluyoruz.
+kodun sonundaki num_categories +1 yazılmasının sebebi ise; Python'da indeksler 0'dan başladığı için, range(num_categories + 1) ifadesi kullanılarak num_categories kadar kesim noktası oluşturulur. Ancak, son kesim noktasından sonraki kategori de dahil edildiğinden, son kategorinin üst sınırını temsil eden bir kesim noktası daha oluşturulmalıdır. diyor chatgpt ama ben anlamadım tam olarak.
+
+f'{bins[i]:.1f}-{bins[i+1]:.1f}': Burada f-string formatı kullanılarak her etiket oluşturulur. bins[i] ifadesi, belirli bir kategori aralığının alt sınırını temsil eder. bins[i+1] ifadesi ise aynı kategorinin üst sınırını temsil eder. Noktalı virgül (:) sonrasındaki .1f, ondalık basamak sayısını belirler ve virgülden sonra 1 basamak gösterilmesini sağlar.
+
+data[column + '_category'] = pd.cut(data[column], bins=bins, labels=labels, include_lowest=True)
+Bu satır, sürekli bir değişkeni belirli aralıklara bölmek ve bu bölmeleri kategorik bir değişken olarak atanmış yeni bir sütun oluşturmak için kullanılır. pd.cut() işlevi, verileri belirli kesim noktaları (aralık sınırları) arasında böler ve her bir değeri atanmış etiketlere göre kategorilere ayırır.
+
+pd.cut() işlevinin kullanımı aşağıdaki gibidir:
+pd.cut(x, bins, labels=None, right=True, include_lowest=False, ...)
+Burada, x sürekli değişkeni temsil ederken, bins kesim noktalarının listesini ifade eder. labels, oluşturulan kategorilere atanacak etiketleri belirtir. include_lowest, en düşük değerin altında olan gözlemlerin en düşük kategoriye dahil edilip edilmeyeceğini belirler.
+
+Ardından veri kopyalanır, 
+
+# Categorize selected continuous columns
+continuous_columns = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']
+for column in continuous_columns:
+    categorize_continuous_column(subsample_data1_categorized, column, num_categories)
+
+Bu yukardaki kodda ise continuous_columns= ile kategorize etmek istediğimiz sütunları veririz, al bunları kategorize et anlattığım şekilde demek oluyor bu.  
+For döngüsünde ise column(x/rastgele) continuous_columns'dan indexli veriyi al, bu burda ne oluyor sırasıyla sütunlar; Glucose, BloodPressure.. Bu sütunu al ve yukarda tanımladığımız fonksiyonu buna uyarla(categorize_continuous_column) bu fonksiyonun ilk parametresi neydi? data. Biz buraya data olarak data1'in bir kopyasını giriyoruz. Burdan kazancımız ne? Hem elimizdeki datayı değiştirmemiş oluyoruz hem de direkt bu kategorize olmuş veri için hazır bir değişkenimiz var. Yani birdaha kategorize olmuş verilerimize ihtiyacımız olduğunda data_raw, data1 gibi değişkenlerle tekrar tekrar uğraşmamız ve yine kategorize etmemiz, filtrelememize gerek yok. Çünkü elimizde direkt olarak hazır subsample_data1_categorized diye bir değişken var. Başta içi boştu yani sadece bir data1 kopyasıydı. Şimdi ise elimizde işlenmiş, kategorize edilmiş bir veri var. 
+
+Set up the figure and subplots: Görsel çıktının düzenini ve alt grafiği (subplot) belirler. Burada, kaç sütun ve kaç satır alt grafiğin olacağı ayarlanır.
+
+for döngüsü (ikinci): Bu döngü, her bir sürekli değişkenin kategorize edilmiş hali için bir alt grafik oluşturur. enumerate fonksiyonu, döngü içindeki değişkenin indeksini ve değerini döndürür, böylece ilgili sütunun indeksini takip edebilirsiniz.
+
+sns.barplot fonksiyonu: Bu fonksiyon, kategorize edilmiş sürekli değişken ile hedef değişken ('Outcome') arasındaki ilişkiyi gösteren bir bar plot çizer. x eksenine kategorileri, y eksenine ise hedef değişkenin ortalamasını yerleştirir.
+
+for i, column in enumerate(continuous_columns):
+    row = i // num_cols
+    col = i % num_cols
+    ax = axes[row, col]
+    sns.barplot(x=column + '_category', y='Outcome', data=subsample_data1_categorized, ax=ax)
+    ax.set_title(f'{column} Category vs Outcome')
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+
+Kodu için:
+
+
+Bu koddaki row ve col hesaplamaları, alt grafiklerin yerleştirileceği sıra ve sütunları belirlemek için kullanılır. Kod, bir döngü aracılığıyla her bir sürekli değişkeni gezerek alt grafiklerin düzenini ayarlar.
+
+enumerate(continuous_columns) ifadesi, continuous_columns listesindeki sürekli değişkenleri indeksleriyle birlikte dönmesini sağlar. Her bir değişken için döngüdeki i değişkeni indeksi temsil ederken, column değişkeni o anki sürekli değişkeni temsil eder.
+
+row = i // num_cols ifadesi, alt grafiklerin sıra indeksini hesaplar. i indeksi, toplam sütun sayısına (num_cols) bölünerek hangi sıraya düşeceği belirlenir. Bunu şöyle düşünün 1 başta ne 0 çünkü kodun tamamına baktığımızda, kafamızı biraz yukarı kaldırdığımızda çalıştığımız yerin continuous_column olduğunu görürüz,  index olarak i verdiğimizde i'yi ne dolduracak? ilk sütun verisi, index değeri ne 0, i=0  ise 0//3 (0/3 çünkü başta num_cols'a 3 demiştik)  nedir 0'dır. sonra 1'i dener 1/3 =0 ,2/3=0 , 3/3=1 o zaman index'i 1 olan satıra geçer, yani 2.satıra. 
+
+col = i % num_cols ifadesi, alt grafiklerin sütun indeksini hesaplar. i indeksi, toplam sütun sayısına (num_cols) bölünür ve kalan bu değişkeni temsil eder. Bu kalan değer, alt grafiklerin hangi sütunda yer alacağını belirler.
+
+ax = axes[row, col] ifadesi, axes matrisindeki uygun hücreyi seçer. row ve col hesaplamalarına göre hangi hücrede alt grafiğin olması gerektiği belirlenir.
+
+Sonrasında, sns.barplot() işlevi, belirtilen sürekli değişkenin kategorileri ile hedef değişken arasındaki ilişkiyi gösteren bir çubuk grafiği oluşturur. x ekseni, kategorileri temsil ederken y ekseni hedef değişkeni ("Outcome") temsil eder. ax parametresi, grafiğin çizileceği alt grafiği belirtir.
+
+[23] Burda örneklem belirliyoruz. Size örneklem belirleme ile alakalı yaptığım araştırma bilgilerini aktarmak istiyorum. İstatistiksel ve teorik bilgiye ihtiyacınız yoksa bu kısımları geçebilirsiniz.
+
+Örneklem belirleme: Örneklem boyutunu belirlerken, genellikle veri setinin boyutunu, hedeflenen analiz ve yapılabilirlik faktörlerini göz önünde bulundurmamız gerekir. Örnekleme boyutunu yüzdelik olarak ifade etmek yerine, mutlaka örneklem sayısı olarak belirlemeniz daha sağlıklı olacaktır.
+Yapılabilirlik = Zaman, maliyet ve gücü göz önünde bulundurmak anlamına gelir. Elinizde devasa bir veri varsa bunu her zaman yaptığınız gibi defalarca, detaylıca ve çok iyi kategorize edilmiş  şekilde %100 şekilde inceleyemeyebilirsiniz. İşte burda fizibilite çalışması devreye girer.
+
+Örneklem boyutu belirleme: 
+1. Z-tabanlı örneklem boyutu belirleme: Bu yöntem, belirli bir güven aralığı ve hata payı(marj) değeriyle örneklem boyutunu hesaplamak için kullanılır. Bu formül normal dağılım varsayımı gerektirir. İşte burası önemlidir. 
+
+Formül: n= (z^2*p*(1-p)/E^2)
+n= örneklem boyutu 
+Z= Z puanı(güven aralığına göre;genellikle %95 için 1.96'dır)
+p = Tahmin edilen parametrelerin olasılığı(genellikle 0.5)
+E = Hata payı (marj)
+--------python kullanımı da şu şekildedir-----
+# Z-tabanlı örneklem boyutu hesaplama
+confidence_level = 0.95
+margin_error = 0.04
+p = 0.5
+Z = stats.norm.ppf((1 + confidence_level) / 2)
+sample_size = math.ceil((Z**2 * p * (1 - p)) / (margin_error**2))
+
+# Örneklem yapın
+data_raw_sampled = data_raw.sample(n=sample_size, random_state=42)
+
+2.Güven Aralığı ve Standart Sapma ile Örneklem Boyutu Hesaplama: Bu yöntemde, belirli bir güven aralığı, standart sapma ve hata payı değeri kullanılarak örneklem boyutu hesaplanır.
+
+Formül: n= (Z^2*@^2)/E^2
+n = örneklem boyutu
+Z = z puanı(güven aralığına göre)
+@ = standart sapma
+E = Hata payı
+
+Şimdi kodumuza geri dönecek olursak; 
+Güven aralığı, marjinal hata ve beklenen oran gibi değerleri belirliyoruz:
+
+confidence_level = 0.95: Güven aralığını %95 olarak ayarlıyoruz.
+margin_error = 0.04: Marjinal hatayı 0.04 olarak belirliyoruz.
+p = 0.5: Beklenen oranı 0.5 (yani eşit dağılım) olarak belirliyoruz.
+Z = stats.norm.ppf((1 + confidence_level) / 2): Belirtilen güven aralığına göre Z skorunu hesaplıyoruz.
+sample_size = math.ceil((Z**2 * p * (1 - p)) / (margin_error**2)): Z skoru, beklenen oran ve marjinal hata değerleri kullanılarak örneklem büyüklüğünü hesaplıyoruz.
+
+Veri setinden örnekleme yapma işlemi:
+
+data_raw_sampled = data_raw.sample(n=sample_size, random_state=42): sample_size kadar örnek alarak, rastgele örneklenmiş veri kümesini data_raw_sampled adlı değişkende saklıyoruz. random_state=42 parametresi, rastgele örnekleme işleminin tekrarlanabilirliği için bir başlangıç durumu belirler.
+Sürekli değişkenleri kategorize etme işlemi:
+
+continuous_columns: Kategorize edilecek sürekli değişkenlerin listesi.
+num_categories = 5: Kategorilerin sayısını belirliyoruz.
+categorize_continuous_column(): Belirli bir sürekli değişkeni kategorilere ayıran fonksiyonu tanımlıyoruz.
+Döngü aracılığıyla her bir sürekli değişkeni gezerek, categorize_continuous_column() fonksiyonunu çağırarak kategorizasyon işlemini gerçekleştiriyoruz.
+Grafikleri çizme adımı:
+
+num_cols = 3: Her satırda kaç alt grafik olacağını belirliyoruz.
+num_rows = (len(continuous_columns) + num_cols - 1) // num_cols: Toplam alt grafik sayısına göre gereken satır sayısını hesaplıyoruz.
+fig, axes = plt.subplots(nrows=num_rows, ncols=num_cols, figsize=(16, 5 * num_rows)): Alt grafiklerin yerleştirileceği boş bir görsel oluşturuyoruz.
+Döngü aracılığıyla her bir sürekli değişkeni gezerek, kategorize edilmiş veri üzerinde çubuk grafikler çiziyoruz.
+ax.set_title(), ax.set_xticklabels() gibi işlevlerle alt grafiklerin başlıklarını ve etiketlerini belirliyoruz.
+Son olarak, plt.tight_layout() ile grafiklerin düzenini ayarlayıp plt.show() ile grafikleri görüntülüyoruz.
+
+[24] Burda ise data_glucose_binned adında bir ham data kopyası alıyoruz, ilerde kullanmak üzere. 
+bins = list(range(0, 201, 10))  # 0'dan 200'e kadar 10'ar 10'ar bölgeler
+labels = [f"{start}-{start+9}" for start in bins[:-1]]  # Bölge etiketleri
+data_glucose_binned['Glucose_Binned'] = pd.cut(data_glucose_binned['Glucose'], bins=bins, labels=labels)
+Bu kısımda yaptığımız şey ise bins = ile de yazdığı gibi 10'ar 10'ar 0'dan 200'e kadar bölümlendirir.
+labels satırında ise daha önce yaptığımız işlemin aynısını yaparız.
+Burada labels adlı bir liste oluşturuluyor. Bu liste, her kategori için belirtilen bölge etiketlerini içerecek.
+List comprehension kullanılmıştır. for start in bins[:-1] ifadesi, bins listesinin son öğesini (en yüksek bölme sınırını) dışarıda bırakarak her bir bölmenin başlangıcını temsil eder.
+f"{start}-{start+9}" ifadesi, bir bölge etiketinin formatını belirtir. Burada start bölmenin başlangıcını temsil eder ve start+9 bölmenin son sınırını temsil eder. Bu, bölge aralıklarını gösteren bir metin oluşturur. Örneğin, eğer start 100 ise, etiket "100-109" şeklinde olacaktır.
+Öncesinde kullandığımız pd.cut yine kullanılıyor ve aynı amaç için.
+Ardından grafiğin çizimi yaptırılır.
+
+[25] Burda ise aynı işlemleri yapıyoruz ama sadece 24.hücrede ortak olarak bulunan verileri daha iyi görmek için ayırıyoruz. 3 grafikte farklı şeyleri söylüyor gibi sebebini anlayamadım.
+Burda çarpıklıktan yorum yapılabilir.
+
+[26] aynı işlemleri BloodPressure için de uyguluyoruz. 
+
+[27] Ardından SkinThickness ve Insulin için de uyguluyoruz.
+
+[28] Bu hücrede diyabet sonucunun yaşta nasıl dağıldığını gözlemliyoruz. sns.FacetGrid(data1, hue='Outcome', aspect=4) ile bir çerçeve oluşturuluyor. data1 veri çerçevesi üzerinde çalışılıyor. hue='Outcome' ifadesi, çerçevedeki verilerin 'Outcome' sütununa göre renklendirilmesini sağlar. aspect=4 ise alt grafiklerin yatay genişliğinin dikey genişliğine oranını belirler.
+a.map(sns.kdeplot, 'Age', shade=True) ifadesi ile çerçeve üzerindeki alt grafiklerde 'Age' sütununa göre çekirdek yoğunluk tahminleri çizdiriliyor. sns.kdeplot fonksiyonu, verilerin yoğunluk tahminini çizmeye yarar. shade=True ifadesi ile bu yoğunluk tahminleri gölge olarak renklendiriliyor.
+
+a.set(xlim=(0, data1['Age'].max())) ifadesi ile x-ekseni sınırları belirleniyor. Bu ifadede yaş değerlerinin minimum değeri 0 olarak belirlenirken, maksimum değeri data1['Age'].max() ile belirlenir.
+
+a.add_legend() ile çerçeveye bir açıklama (legend) ekleniyor. Bu açıklama, farklı 'Outcome' değerlerine göre renklendirilmiş verilerin ne anlama geldiğini gösterir.
+
+[29] Burda aynı işlemi Glucose için yapıyoruz.
+
+[30] Burda karşımıza tüm özellikleri içeren ve bize genel bir fikir vericek çoklu bir grafik karşımıza çıkıyor.
+pp = sns.pairplot(data1, hue='Outcome', palette='deep', size=1.2, diag_kind='kde', diag_kws=dict(shade=True), plot_kws=dict(s=10)): Bu satırda pair plot (çift değişkenli dağılım grafiği) oluşturuluyor. data1 veri çerçevesi kullanılıyor. hue='Outcome' ile Outcome sütununa göre renklendirme yapılıyor. palette='deep' ile renk paleti belirleniyor. size=1.2 ile grafik boyutu ayarlanıyor. diag_kind='kde' ile diyagonalde çekirdek yoğunluk tahmini (KDE) grafiği çizdiriliyor. diag_kws=dict(shade=True) ile çekirdek yoğunluk tahmininin altı renklendiriliyor. plot_kws=dict(s=10) ile noktaların boyutu belirleniyor.
+
+pp.set(xticklabels=[]): Bu satırda x eksenindeki etiketler (tick labels) kaldırılıyor. Yani her bir çift değişkenli grafiğin altında yer alan x eksenindeki etiketler görüntülenmiyor.
+Aynı özelliklerin çaprazlama denk gelmesi ise o özelliğin dağılımını bize direkt olarak verir. Şahsen benim aklıma pregnancies-pregnancies ilişkisi için %100 korelasyon içeren bir grafik olmalı gibisinden düşünüyordum. Dediğim gibi direkt o değişkenin dağılımını veriyor.
+
+[31] Bu hücrede ise bir heatmap korelasyon haritası çizdiriyoruz.
+
+def correlation_heatmap(df):: Bu satırda correlation_heatmap adında bir fonksiyon tanımlanıyor. Fonksiyon bir veri çerçevesi (df) alacak ve bu veri çerçevesinin özelliklerinin korelasyon ısı haritasını çizecek.
+
+_ , ax = plt.subplots(figsize =(14, 12)): Bu satırda _ ve ax değişkenleri tanımlanıyor. _ genellikle atılacak değerleri temsil etmek için kullanılan bir yer tutucu isimdir. ax ise alt grafik (axes) nesnesini temsil eder. plt.subplots(figsize=(14, 12)) ile 14 birim genişliğinde ve 12 birim yüksekliğinde bir alt grafik oluşturuluyor. subplots fonksiyonu aynı anda birden fazla grafik çizmeye yardımcı olur ve ax nesnesi bu alt grafiklerin üzerinde çalışmamıza izin verir.
+
+colormap = sns.diverging_palette(220, 10, as_cmap = True): Bu satırda colormap adında bir renk haritası oluşturuluyor. Renkler arasındaki geçişleri belirlemek için sns.diverging_palette fonksiyonu kullanılıyor.
+
+_ = sns.heatmap(...) - plt.title(...): Bu satırlarda sns.heatmap fonksiyonu kullanılarak korelasyon ısı haritası çizdiriliyor. cmap ile renk haritası belirleniyor, square=True ile kare şeklinde bir harita oluşturuluyor, cbar_kws ile renk çubuğunun özellikleri ayarlanıyor, ax=ax ile alt grafik nesnesi belirtiliyor. annot=True ile haritada değerlerin görüntülenmesi sağlanıyor. linewidths ile hücreler arasındaki çizgi kalınlığı belirleniyor. vmax=1.0 ile renk ölçeğinin maksimum değeri 1 olarak ayarlanıyor. annot_kws ile değerlerin görüntülenme özellikleri ayarlanıyor.
+
+plt.title('Pearson Correlation of Features', y=1.05, size=15): Bu satırda haritanın başlığı belirleniyor. y=1.05 ile başlığın yüksekliği ayarlanıyor.
+
+Bu tür bir _ , ax = ... yapı, sıklıkla işlevin birden fazla çıktısı olduğunda veya bir değişkenin değerini atarken kullanılır. _ sembolik olarak bir atıl değeri temsil eder ve genellikle ilgilenmediğimiz çıktıları belirtmek için kullanılır. ax ise alt grafik nesnesini temsil eder ve bu nesne üzerinde grafikler çizdirilir. Virgül ise birden fazla değişkeni aynı anda atama yapmak için kullanılır. Bu örnekte, plt.subplots fonksiyonunun iki çıktısı olduğundan, _ atıl değer olarak kullanılırken, ax alt grafik nesnesini temsil ediyor.
+
+
+Alt grafik nesnesi, birden fazla grafik veya görselin aynı çizim üzerinde görüntülenmesine olanak tanıyan bir nesnedir. Bir alt grafik nesnesi, bir ana grafik (figür) içinde oluşturulur ve bu alt grafik nesnesi üzerinde çeşitli görsel öğeler (grafikler, tablolar, metinler, vb.) yerleştirilebilir. Alt grafikler, genellikle daha küçük boyutlu grafikleri yan yana veya üst üste koyarak daha karmaşık görseller oluşturmak için kullanılır.
+
+Örneğin, plt.subplots fonksiyonu ile oluşturulan ana grafik üzerine, alt grafik nesneleri ekleyebilirsiniz. Bu alt grafik nesneleri üzerine farklı veri görselleri yerleştirebilir veya aynı veriyi farklı şekillerde görselleştirebilirsiniz.
+
+Kod örneğinizde sns.heatmap fonksiyonu altında belirtilen ax=ax ifadesi ile heatmap (ısı haritası) grafiğini oluşturmak için kullanılan alt grafik nesnesi belirtiliyor. Bu sayede heatmap grafiği, ax alt grafik nesnesi içinde oluşturuluyor ve sns.heatmap fonksiyonunun çağrıldığı yerdeki ayarlar bu alt grafik nesnesine uygulanıyor. Bu şekilde, aynı ana grafik üzerinde farklı alt grafikler oluşturarak birçok farklı görseli bir arada görüntüleyebilirsiniz.
+
+Eğer sns.heatmap() ile ilgili daha fazla bilgi almak istiyorsanız aşağıyı okumanızı tavsiye ederim, yoksa devam edebilirsiniz:
+
+sns.heatmap fonksiyonunun default parametreleri:
+
+data: Veriyi temsil eden bir pandas DataFrame.
+cmap: Renk haritası (colormap) için kullanılan renk skalası.
+square: Kare formunda bir ısı haritası oluşturulup oluşturulmayacağını belirler.
+cbar_kws: Renk skalası çubuğunun (colorbar) ayarlarını içeren bir sözlük.
+ax: Alt grafik nesnesi (axes), grafiğin nerede oluşturulacağını belirler.
+annot: Hücrelerin içine sayısal değerlerin yazılması için kullanılır.
+linewidths: Hücre çerçevelerinin kalınlığını belirler.
+vmax: Renk skalası için maksimum değeri belirler.
+linecolor: Hücre çerçevelerinin rengini belirler.
+annot_kws: Sayısal değerlerin içine yazılan metinlerin ayarlarını içeren bir sözlük.
+
+Şimdi yukarıdaki kodda kullanılan parametrelere daha ayrıntılı bir şekilde bakalım:
+
+df.corr(): İlişki matrisini ifade eden bir pandas DataFrame. Bu matris, veri çerçevesinin sütunları arasındaki korelasyonları içerir.
+cmap: Renk haritası olarak kullanılacak renk skalası. Örneğin, 'viridis', 'coolwarm', 'YlGnBu' gibi renk skalaları kullanılabilir.
+square: Kare formunda bir ısı haritası oluşturulup oluşturulmayacağını belirler. True ise kare, False ise dikdörtgen formunda oluşturulur.
+cbar_kws: Renk skalası çubuğunun (colorbar) ayarlarını içeren bir sözlük. 'shrink': 0.9 ile çubuğun boyutunu belirliyoruz.
+ax: Alt grafik nesnesi (axes), heatmap grafiğinin nerede oluşturulacağını belirler.
+annot: Hücrelerin içine sayısal değerlerin yazılıp yazılmayacağını belirler. True ise yazılır, False ise yazılmaz.
+linewidths: Hücre çerçevelerinin kalınlığını belirler.
+vmax: Renk skalası için maksimum değeri belirler. Varsayılan olarak 1.0.
+linecolor: Hücre çerçevelerinin rengini belirler.
+annot_kws: Sayısal değerlerin içine yazılan metinlerin ayarlarını içeren bir sözlük. 'fontsize': 12 ile yazıların boyutunu ayarlıyoruz.
+
+ve son olarak     plt.title('Pearson Correlation of Features', y=1.05, size=15) kodundaki  y= 1.05 neden var diye sorarsanız. Y ekseninde grafiği kaydırmak için kullanılır. Bazen grafiğe çok yakın veya iç içe geçebiliyor grafikle başlık. Bunu önemek için kullanılır.
+
+[32] İşte burda machine learning algoritmalarını devreye sokuyoruz. Seçim ve uygulamalarını yapıyoruz.
+train1_x_bin, test1_x_bin, train1_y_bin, test1_y_bin 
+
+train1_x, test1_x, train1_y, test1_y = model_selection.train_test_split(data1[data1_x_calc], data1[Target], random_state = 0)
+train1_x_bin, test1_x_bin, train1_y_bin, test1_y_bin = model_selection.train_test_split(data1[data1_x_bin], data1[Target] , random_state = 0)
+
+taslağın akılda kalması adına 
+
+MLA İçe Aktarma ve Seçim:
+Bu bölümde, kullanılacak farklı makine öğrenimi algoritmaları (MLA) bir liste olarak tanımlanmıştır. Liste içerisinde AdaBoost, Bagging, Random Forest, Gaussian Process, Logistic Regression, K-Nearest Neighbors, XGBoost vb. gibi algoritmalar bulunmaktadır.
+
+Veri Hazırlığı:
+data1_x_bin listesi, kullanılacak özelliklerin sütun adlarını içerir. Target ise hedef değişkenin sütun adını içerir. train_test_split fonksiyonu kullanılarak veri seti eğitim ve test setlerine bölünmüştür.
+
+Çapraz Doğrulama Bölünmesi:
+cv_split adında bir çapraz doğrulama bölünmesi oluşturulmuştur. Bu, veri setinin farklı parçalarını eğitim ve test olarak kullanarak algoritmaların performansını değerlendirmek için kullanılacaktır.
+
+Performans Karşılaştırma Tablosu Oluşturma:
+MLA_columns listesi, karşılaştırma tablosunun sütun başlıklarını içerir. Boş bir MLA_compare DataFrame oluşturulmuştur. Algoritmaların performans ölçümleri burada saklanacaktır.
+
+Algoritmaların Performansını Değerlendirme:
+For döngüsü ile her algoritma için aşağıdaki işlemler yapılır:
+
+Algoritma adı ve parametreleri MLA_name ve MLA_parameters değişkenlerine kaydedilir.
+cross_validate fonksiyonu kullanılarak algoritma, çapraz doğrulama bölünmesi ile eğitilir ve değerlendirilir. Elde edilen sonuçlar cv_results adlı bir sözlüğe kaydedilir.
+MLA Time sütununa ortalama eğitim süresi, MLA Train Accuracy Mean sütununa eğitim doğruluğu, MLA Test Accuracy Mean sütununa test doğruluğu, MLA Test Accuracy 3*STD sütununa ise test doğruluğunun üç katı standart sapma değeri eklenir.
+MLA Tahminleri Oluşturma ve Kaydetme:
+Algoritma, tüm veri seti üzerinde eğitildikten sonra, tahminler MLA_predict DataFrame'ine eklenir. Bu, daha sonra tahmin sonuçlarını incelemek için kullanılabilir.
+
+Performans Karşılaştırma Tablosunu Sıralama:
+Algoritmaların performansını karşılaştırmak amacıyla MLA_compare DataFrame'i MLA Test Accuracy Mean sütununa göre sıralanır.
+
+Bu kod bloğu, farklı makine öğrenimi algoritmalarının performansını değerlendirmek, karşılaştırmak ve en iyi sonuçları elde etmek amacıyla yazılmıştır. Sonuç olarak, MLA_compare DataFrame'i, her algoritmanın eğitim ve test doğruluklarını içerir ve performansı karşılaştırmak için kullanılabilir.
+
+Burda başta kullanılacak modelleri girdikten sonra, train test işlemi yapılıyor. model eğitimi işlemi yapıldıktan sonra:
+cv_split = model_selection.ShuffleSplit(n_splits = 10, test_size = .3, train_size = .6, random_state = 0 ) # run model 10x with 60/30 split intentionally leaving out 10%
+
+n_splits = 10: Toplamda 10 ayrı bölme yapılacağını belirtir. Yani model 10 farklı kombinasyonla eğitilecek ve değerlendirilecek.
+
+test_size = 0.3: Test setinin boyutunu belirler. Her bölme işleminde verinin %30'u test seti olarak ayrılacak.
+
+train_size = 0.6: Eğitim setinin boyutunu belirler. Her bölme işleminde verinin %60'ı eğitim seti olarak kullanılacak.
+random_state = 0: Rastgele bölme işlemlerinin tekrarlanabilir olmasını sağlamak için kullanılır. Aynı rastgele durumu kullanarak tekrarlanabilir sonuçlar elde etmek istendiğinde kullanılır.
+
+Özetle, model %60 train %30 test olacak şekilde bölünecek ve bu bölünme işlemi 10 kere yapılacak ki gerçek değerlere daha yakın daha iyi bir model oluşturulabilsin.
+
+
+#create table to compare MLA metrics
+MLA_columns = ['MLA Name', 'MLA Parameters','MLA Train Accuracy Mean', 'MLA Test Accuracy Mean', 'MLA Test Accuracy 3*STD' ,'MLA Time']
+MLA_compare = pd.DataFrame(columns = MLA_columns)
+
+ilk satırda bu modelleri görebileceğimiz bir tablo oluştururuz,daha iyi bir şekilde gözlemlemek ve fikir sahibi olabilmek için. Ardından daha sonra kıyaslamak üzere bir yeni dataframe oluştururuz yukardaki satırda verdiğimiz tabloyla.
+
+Ardından:
+MLA_predict = data1[Target]
+satırı ile tahmin değerlendirmesi yapabilmek için data1[Target] yani gerçek değerleri içeren bir dataframe oluştururuz. Burdan yola çıkarak modelin performansını ölçümleyeceğiz.
+
+Bu döngü, ML algoritmalarını liste içerisinde sırayla gezerek her bir algoritmanın performansını değerlendirmek amacıyla kullanılıyor.
+
+row_index = 0: Bu satır, MLA_compare veri çerçevesinde hangi satıra yazılacağını belirlemek için kullanılan bir indeks değişkenidir. İlk başta 0 olarak ayarlanıyor çünkü her algoritmanın sonuçları sırayla farklı satırlara kaydedilecek.
+
+MLA_name = alg.__class__.__name__: Bu satır, her algoritmanın sınıf adını (__class__.__name__) alarak MLA_name adlı bir değişkende saklar. Bu, ilerleyen satırlarda algoritmanın adını belirlemek için kullanılır.
+
+MLA_compare.loc[row_index, 'MLA Name'] = MLA_name: Bu satır, MLA_name değişkeninde saklanan algoritma adını, MLA_compare veri çerçevesindeki ilgili hücreye yerleştirir.
+
+MLA_compare.loc[row_index, 'MLA Parameters'] = str(alg.get_params()): Bu satır, her algoritmanın parametrelerini bir metin olarak elde eder ve bu metni MLA_compare veri çerçevesindeki ilgili hücreye yerleştirir. alg.get_params() metodu, her bir algoritmanın parametrelerini döndürür.
+
+Yani bu kod parçası, her bir algoritmanın adını ve parametrelerini MLA_compare veri çerçevesine kaydederek, her bir algoritmanın performansını ve özelliklerini karşılaştırma amacına hizmet eder. str(alg.get_params()) ifadesi, algoritmanın parametrelerini bir metin olarak elde etmek için kullanılan bir Python fonksiyonudur.
+
+#score model with cross validation: http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_validate.html#sklearn.model_selection.cross_validate
+
+
+cv_results = model_selection.cross_validate(alg, data1[data1_x_bin], data1[Target], cv=cv_split, return_train_score=True)
+
+Bu yukarıdaki kodda ise cross validation sonuçlarını yazdırıyoruz. Bunu model_selection.cross_validate fonksiyonu kullanılarak bu sonuçlar elde edilir.
+
+Bu fonksiyona girilen parametreleri ve sırasını bilmek çok önemli. İşte sırasıyla parametreler;
+
+1.Parametre alg: Bu değişken for döngüsüne attığımız MLA listesindeki x'i temsil etmektedir. Model verilir ilk parametre olarak. Biz bir liste verdik, bir sürü modelden oluşan ve bu for döngüsü ile MLA listesi dolaşılır ve tüm modeller uygulanır, sonuçlar yazdırılır.
+
+2.Parametre data1[data1_x_bin]: fonksiyona bir özellik listesi veriyoruz. Bu verdiğimiz özellik listesi modeli ne üzerinden değerlendirdiğimizdir. data1'in içindeki data1_x_bin verileri yani bağımsız X değişkenleri verilir. Modeli hangi özellikler üzerinden değerlendireceğimizin cevabıdır. 
+
+3.Parametre data1[Target]: Bağımlı(target)değişken verilir. Burda ise sonuç karşılaştırılması yapabilmek için gerçek değerlerin verildiği kısımdır.
+
+4.Parametre cv=cv_split: cv: Bu parametre, çapraz doğrulama için hangi bölütleme stratejisinin kullanılacağını belirler. Bu bölütleme stratejisi, modelin performansını değerlendirmek için veriyi nasıl böleceğimizi belirler. Örneğin, model_selection.ShuffleSplit(n_splits=10, test_size=0.3, train_size=0.6, random_state=0) ifadesi, veriyi 10 parçaya böler, bunlardan 6'sını eğitim verisi olarak kullanırken diğer 3'ünü test verisi olarak kullanır. Bu işlemi rastgele yapar. cv_split olarak tanımlanan bu bölütleme stratejisi, cross_validate fonksiyonuna verilir.
+
+5.Parametre return_train_score: Bu parametre, eğitim verisi üzerinde yapılan performans ölçümlerini döndürüp döndürmemeyi belirler. True olarak ayarlanırsa, eğitim verisi üzerindeki performans sonuçları da dönecektir. Bu genellikle modelin eğitim verisi üzerindeki performansını da görmek istediğimizde kullanılır.
+
+Özetle, cross_validate fonksiyonu, belirlediğiniz çapraz doğrulama bölütleme stratejisi (cv) ve modelin eğitim verisi üzerindeki performansını görmek isteyip istemediğinize (return_train_score) bağlı olarak belirttiğiniz model için çapraz doğrulama sonuçlarını hesaplar ve döndürür.
+
+Devamında ise MLA_compare içine attığımız MLA_columns değerlerini ve karşısına gelicek değerleri ayarlıyoruz. Mesela MLA_time için cv_results['fit_time'].mean() kullanıyoruz. Hazır bir fonksiyon geçen süreyi yazdırır.
+
+MLA Train Accuracy Mean için ise cv_results['train_score'].mean() kodunu kullanırız bu hazır bir fonksiyon değil. Burda git cv_results da topladığımız değerlere, return_train_score ile döndürdüğümüz deperleri al ve ortalamalarını al deriz.
+
+MLA Test Accuracy Mean kodu ile de ortalama tutarlılık değerini buluruz. cv_results['test_score'].mean() koduyla aynı işlemi test_score için yaparız.
+
+MLA_compare.loc[row_index, 'MLA Test Accuracy 3*STD'] = cv_results['test_score'].std()*3
+Yukardaki kodla 
+
+ Her bir modelin çapraz doğrulama sonuçları arasında bir ölçüde değişkenliği anlamak ve değerlendirmek için istatistiksel bir işlem yapmaktadır. Burada yapılan işlem, her modelin test doğruluk skorlarının standart sapmasını (std()) hesaplamak ve bu standart sapmanın 3 katını çarpmaktır.
+
+Standart sapma, bir veri kümesinin ne kadar yayıldığını ve verilerin ortalamadan ne kadar uzaklaştığını ölçer. Bir değerin 3 standart sapmanın üzerinde veya altında olması, istatistiksel olarak anormal veya aşırı değer olarak kabul edilebileceği anlamına gelir.
+
+Bu kod satırıyla, her bir modelin test doğruluk skorlarının standart sapmasını 3 kat çarparak, bir tür güven aralığı oluşturulur. Bu güven aralığı, bir modelin performansının olası değişkenliğini gösterir. Daha yüksek standart sapma değeri, modele dayalı test sonuçlarının daha fazla varyasyon gösterdiğini gösterebilir ve bu durumda modelin kararsız olabileceğini veya bazı durumlar için daha düşük performans gösterebileceğini düşünebilirsiniz.
+
+Çıkan sonuçlar genellikle çok düşük 3 standart sapmalı sonuçlarda. Bu ne demek model tahminleri çok alakasız kalmamış yani var dediği yerde yok çıkmış, yok dediği yerde var çıkmış(tip 1 hata ve tip 2 hata ) durumları az. Model doğru öğrenip, doğru tahminler yapmış. En büyük standart sapma puanı PassiveAggressiveClassifier üzerinde ve 0.3439 değeridir.
+
+Standart sapmanın büyük olması, verilerin geniş bir aralığa yayıldığını ve bu nedenle ortalamadan uzaklaşan değerlerin fazla olduğunu gösterir. Bu dağılımın büyük olması, modele dayalı test sonuçlarının daha istikrarsız ve değişken olduğunu gösterebilir.
+
+Söylediğiniz değeri, özellikle modelin test sonuçlarının varyasyonunun yüksek olduğunu ve bu nedenle modelin farklı veri parçaları üzerinde değişken sonuçlar üretebileceğini gösteriyor. Bu da modelin genelde daha dengesiz veya daha az güvenilir olabileceği anlamına gelebilir.
+
+Ancak, değerlerin anlamı ve yorumu, kullanılan veri setine, modele ve bağlamına bağlı olarak değişebilir. Genel bir kural olmadığı için belirli bir kıstas belirlemek zordur. Ayrıca, modelin hangi tür veriler üzerinde test edildiği, hangi özelliklerin kullanıldığı ve hangi performans metriklerinin kullanıldığı gibi faktörler de yorumlamada önemlidir. Yani, bu değeri diğer metriklerle ve bağlamla birlikte değerlendirmek daha anlamlı olacaktır.
+
+
+ alg.fit(data1[data1_x_bin], data1[Target])
+    MLA_predict[MLA_name] = alg.predict(data1[data1_x_bin])
+    
+    row_index+=1
+
+koduyla ise algoritmalara .fit ile modele verilen değerler uygulanır model çalıştırılır.Bir alttaki satırda ise modelin öğrendiği değerler tahminlenir x değerlerine göre ve bu MLA_predict değişkenine atanır. ve row_index 1 artırılır. Bu sayede bir sonraki algoritmaya geçilir.
+
+
+[33] Bu kodda ise algoritmaların performansları grafikle görselleştirilir.
+Burda da sns.barplot() kullanımını ve parametrelerin kullanımını görüyoruz.Sıralama ve parametre kullanımları şu şekildedir;
+
+1.Parametre x: X eksenine koyulacak değerlerdir.Burda Algoritma test tutarlılık ortalaması verilir
+
+2.Paramatre y: Y eksenine koyulacak değerlerdir.Burda y eksenine ise sırayla algoritmalar.  data olarak verilir.
+
+3.Parametre data: burda ise seçilen, görmek istediğimiz sonuç datası verilir. data= MLA_compare verilir. Yani sütun adlarını girdiğimiz listeyi atadığımız değişken. Aklınızda böyle kalırsa başka projelerde buraya hangi değişken getiriliyordu gibisinden düşünmezsiniz. Değişken listesini atadığımız dataframe.
+
+4.Parametre color= 'm' ile de barların rengini belirliyoruz.
+
+Ardından grafik başlığı ve x,y eksenleri başlıkları verilir.
+
+
+[34] Bu kod öğrenme amaçlı olarak basit bir tahmin modeli oluşturuyor. Amacı, basit bir rastgele tahmin modeli oluşturarak bunun ne kadar doğru tahmin yapabileceğini değerlendirmek.
+
+Baştaki uyarı sadece algoritma çalışma mantığını anlamamızı sağlamak için oluşturulmuş bir koddur diyor. Bu demek oluyor ki gerçek hayatta bu kadar olasılıklsal bir tahmin yapılmaz ve bu model iyi bir performans vermez.
+
+import random: random modülünü içe aktarır, rastgele sayı üretmek için kullanılır.
+
+import pandas as pd: pandas kütüphanesini içe aktarır, veri çerçeveleri üzerinde çalışmak için kullanılır.
+
+from sklearn import metrics: sklearn kütüphanesinden metrics modülünü içe aktarır, modelin performansını değerlendirmek için kullanılacak metrikleri içerir.
+
+for index, row in data1.iterrows():: data1 adlı DataFrame'in her bir satırı üzerinde döngü başlatılır. index satırın indeksini, row ise satırı temsil eden bir Seri (Series) nesnesini temsil eder.
+
+if random.random() > 0.5:: Rastgele bir değer üretilir ve eğer bu değer 0.5'ten büyükse (yaklaşık olarak yüzde 50 ihtimal), aşağıdaki blok çalıştırılır.
+
+data1.at[index, 'Random_Predict'] = 1: Seçilen satırın 'Random_Predict' sütununa 1 (hayatta kalma) değeri atanır.
+
+else:: Eğer rastgele değer 0.5'ten büyük değilse (yaklaşık olarak yüzde 50 ihtimal), bu blok çalıştırılır.
+
+data1.at[index, 'Random_Predict'] = 0: Seçilen satırın 'Random_Predict' sütununa 0 (ölüm) değeri atanır.
+
+data1['Random_Score'] = 0: 'Random_Score' adlı yeni bir sütun oluşturulur ve başlangıçta tüm değerlerine 0 atanır.
+
+data1.loc[(data1['Outcome'] == data1['Random_Predict']), 'Random_Score'] = 1: 'Outcome' sütunu (gerçek sonuçlar) ile 'Random_Predict' sütunu (rastgele tahminler) aynı ise, 'Random_Score' sütununun değeri 1 olarak atanır.
+
+accuracy = data1['Random_Score'].mean() * 100: 'Random_Score' sütunundaki değerlerin ortalama hesaplanır ve yüzde olarak ifade edilen bir doğruluk oranı hesaplanır.
+
+print('Coin Flip Model Accuracy: {:.2f}%'.format(accuracy)): Elde edilen doğruluk oranı formatlanarak ekrana yazdırılır.
+
+accuracy_sci = metrics.accuracy_score(data1['Outcome'], data1['Random_Predict']) * 100: sklearn.metrics aracılığıyla 'Outcome' (gerçek sonuçlar) sütunu ile 'Random_Predict' (rastgele tahminler) sütunu arasındaki doğruluk oranı hesaplanır.
+
+print('Coin Flip Model Accuracy w/SciKit: {:.2f}%'.format(accuracy_sci)): Elde edilen doğruluk oranı formatlanarak ekrana yazdırılır.
+
+Bu kod, rastgele tahminlerle basit bir modelin nasıl oluşturulacağını ve bu tahminlerin ne kadar doğru olduğunu göstermek için kullanılır.
+
+[35] Bu hücrede ise pivot dediğimiz tabloyu oluşturuyoruz. 
+pivot_glucose = data1[data1.Glucose>=100].groupby(['Pregnancies','BloodPressure', 'SkinThickness','Insulin'])['Outcome'].mean(): Bu satır, 'Glucose' değeri 100 veya daha fazla olan verileri filtreleyerek gruplama işlemi yapıyor. Veriler, 'Pregnancies', 'BloodPressure', 'SkinThickness' ve 'Insulin' sütunlarına göre gruplanıyor. Sonuç olarak, 'Outcome' sütununun ortalama değeri hesaplanıyor ve pivot_glucose adlı bir Seri (Series) nesnesine atanıyor.
+
+[36] Bu hücrede kendi elimizle bir model oluşturuyoruz. mytree(df) adlı bir decision tree modeli oluşturuyoruz. 
+
+#yeni bir DataFrame oluşturuyor. data parametresi kullanılarak DataFrame'in sütunları ve içeriği belirlenir. 
+#Burada 'Predict' adında bir sütun ekleniyor ve bu sütunun başlangıçta boş bir liste ile oluşturulduğunu görüyorsunuz.
+    Model = pd.DataFrame(data = {'Predict':[]})
+
+Genel olarak bakıldığında, bu kodun amacı muhtemelen verilen sütunların içeriğine bağlı olarak belirlenen grubun diyabet olup olmama olasığını bulmak. tahminlerini belirlemek için kullanılmasıdır."model "Predict" sütununda diayabet oldu/olmadı olarak tahminde bulunuyor.
+
+Bu kod bir el ile yapılmış tahmin modeli oluşturan ve bu modelin performansını değerlendiren işlemleri içerir. İşlem adımlarını satır satır açıklıyorum:
+
+Model = pd.DataFrame(data = {'Predict':[]}): Model adında yeni bir DataFrame oluşturulur. 'Predict' adında bir sütun oluşturulur ve başlangıçta boş bir liste ile doldurulur. Bu sütun, tahmin sonuçlarını içerecektir.
+
+for index, row in df.iterrows():: Bu döngü, DataFrame'deki her satırı (index ve satır) çiftleri olarak dolaşır.
+
+Model.loc[index, 'Predict'] = 0: İlk soruya dayalı tahmin yapılır. Model başlangıçta herkesin diyabet olmadığını (0) tahmin eder.
+
+if (df.loc[index, 'Age'] >= 45):: İkinci soru sormak için bir koşul belirtilir. Eğer yaş 45 veya daha büyükse, model bu durumda diyabetli olduğunu (1) tahmin eder.
+
+if ((df.loc[index, 'Insulin'] <= 150) & ...):: Üçüncü soru ve diğer koşullar sırasıyla ele alınır. Eğer belirli koşullar sağlanıyorsa, model diyabetli olduğunu (1) tahmin eder.
+
+if ((df.loc[index, 'Insulin'] <= 150) & ...):: Dördüncü soru ve diğer koşullar sırasıyla ele alınır. Eğer belirli koşullar sağlanıyorsa, model diyabetli olduğunu (1) tahmin eder.
+
+return Model: Model sonuçları içeren DataFrame'i döndürür.
+
+Tree_Predict = mytree(data1): Model, mytree fonksiyonu kullanılarak data1 veri kümesi üzerine uygulanır ve sonuçlar Tree_Predict adında bir DataFrame'e atanır.
+
+print('Decision Tree Model Accuracy/Precision Score: {:.2f}%\n'.format(metrics.accuracy_score(data1['Outcome'], Tree_Predict)*100)): Modelin doğruluk (accuracy) ve hassasiyet (precision) skorları yazdırılır.
+
+Burda metrics.accyracy_score() fonksiyonunun kullanımı çok önemlidir.  ilk parametre olarak gerçek değerler verilir, ikinci parametre olarak tahmin değerleri verilir, biz burda bir model, bir fonksiyon olarak veriyoruz ve 100 ile çarpıyoruz.
+
+print(metrics.classification_report(data1['Outcome'], Tree_Predict)): Scikit-learn kütüphanesinin classification_report işlevi kullanılarak modelin performansının ayrıntılı bir raporu yazdırılır. Bu rapor, doğruluk, hassasiyet, geri çağırma ve F1 skorlarını içerir.
+
+Burda da metrics.classificatin_report() fonksiyonu kullanımı önemlidir. ilk parametre yine gerçek değerler, ikinci parametre tahmin değerleri verilir.
+
+Bu kod, belirli koşullara göre diyabetli olup olmadığı tahmin edilen bir el ile oluşturulmuş tahmin modelini içerir ve modelin performansını değerlendiren işlemleri gerçekleştirir.
+
+[37] Burda yaptığımız işlem ise confusion matrix ile hesapladığımız değerleri, cv modeli ile elde edilen sonuçları görselleştiriyoruz.
+
+plot_confusion_matrix adında bir fonksiyon yazıyoruz ve aldığı parametrelere bakalım:
+
+1.Parametre cm= confusion matrix, yapıcağımız işlemi fonksiyona aktarmış oluruz. cm burda importladığımız bir kütüphaneden zaten tanımlı bir fonksiyondur. 
+
+2.Parametre: classes: Sınıf etiketleri listesi
+3.Parametre: normalize: Matrisin normalizasyonunu yapılıp yapılmayacağını belirten bir bayrak
+4.Parametre: title: Grafiğin başlığı
+5.Parametre: cmap: Renk haritası
+
+cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis] ifadesindeki adımları teker teker inceleyelim:
+
+cm matrisinin türünü float olarak değiştiriyoruz. Bu, normalizasyon işlemi yaparken kesirli sayıların doğru şekilde hesaplanmasını sağlar.
+
+cm.sum(axis=1) ifadesi, her satırın toplamını hesaplar. Bu, her gerçek sınıf etiketi için toplam örnek sayısını temsil eder.
+
+[:, np.newaxis] ifadesi, matrisin boyutunu genişletir. Bu ifade her bir toplam değeri için yeni bir sütun ekler.
+
+if satırını tekrar anlatmak gerekirse; 
+cm= cm.astype('float') ile ilk olarak floata çevrilir veri  
+/ işareti ile her bir hücre normalize edilir(chatGPT'nin demesine göre)
+cm.sum(axis=1) ile  satır toplamı bir değere eşitlenir. ve bu 1 e eşitlenir. Bu yüzdelik olarak değerleri görmemizi sağlayan işlemdir. axis=1 bunu sağlar.
+[:,np.newaxis] : Bu ifade, her satırın toplamını yeniden şekillendirmek ve her satırın toplamını ayrı bir sütun olarak ifade etmek içindir. Bu, her sınıfın toplam tahmin sayısını yansıtan bir dizi oluşturur. Bu dizi daha sonra her hücre değeriyle bölündüğünde, her sınıfın tahmin oranı hesaplanır.
+
+Sonuç olarak, cm matrisinin her bir değeri, karşılık gelen satırdaki toplam sayıya bölünerek normalleştirilir. Böylece, matrisin değerleri 0 ile 1 arasında olur ve toplam değerleri 1 olur. Bu normalizasyon işlemi, görselleştirilen matrisin daha anlaşılır ve yorumlanabilir olmasını sağlar.
+
+Eğer normalize değişkeni False olarak ayarlanmışsa, sadece matrisin normalleştirilmemiş halini yazdırarak hangi matris türünü gördüğümüzü belirtir.
+
+Kodun devamında;
+
+plt.imshow(cm, interpolation='nearest', cmap=cmap)
+satırında ise plt.imshow() fonksiyonuna parametrelerini veriyoruz;
+
+1.Parametre: cm ile modeli ne yapıcağını, nasıl kullanıcağını veriyoruz. 
+
+2.Parametre: interpolation=nearest ile confusion matrix'in ilişki bazlı renk dağılımını belirleriz. Yani mesela sol üst(0,0) tahmin ve gerçek değer için verilen renk o alandaki tüm  pixel'i boyar. Renk geçişi nasıl olsun bizzat onu söyleriz.nearest  en yakın 1 pixel ötedeki komşu pixelin rengini alır. Eğer confusion matrix biraz daha palete benzesin istersek. Kategorik bir görünümdense daha çok bir sürekli değişken geçişi gibi, bir renk kayması görmek istersek bilinear daha da fazlasını görmek istersek bicubic kullanılır nearest yerine
+
+nearest: en yakın komşu pixelin değerini alır.
+bilinear: Dört komşu pixelin ağırlıklı ortalama değerini alır.
+bicubic: 16 komşu pixelin ağırlıklı ortalamalarını alır.
+
+tick_marks = np.arange(len(classes)) satırı, x ve y eksenlerindeki etiketlerin konumlarını belirlemek için kullanılır. Bu satır, tick_marks adında bir NumPy dizisi oluşturur ve bu dizi, sınıf isimlerinin konumlarını içerir.
+
+Şimdi adım adım açıklayayım:
+
+len(classes): Bu ifade, classes adında bir liste veya dizi içinde kaç tane sınıf adı olduğunu belirtir. Bu durumda, sınıflar "Not diabetes" ve "Diabetes" olarak belirlenmişti, yani toplamda 2 sınıf var.
+
+np.arange(len(classes)): Bu ifade, NumPy kütüphanesinin arange işlevini kullanarak, 0'dan başlayarak len(classes) kadar olan ardışık tam sayıları içeren bir dizi oluşturur. Yani, eğer len(classes) 2 ise, tick_marks dizisi [0, 1] şeklinde olur.
+
+Bu dizi, x ve y eksenlerindeki etiketlerin hangi konumlarda görüntüleneceğini belirlemek için kullanılır. Her bir etiket, sınıfların sırasına göre belirli bir konumda görüntülenir. Bu sayede karmaşıklık matrisinin hücreleri ile sınıf adları arasında eşleşme sağlanmış olur.
+
+Burda yaptığımız olayı şöyle detaylandırmakta fayda var eğer mantığını anlamadıysanız bakın:
+
+tick_marks adında bir np. listesi oluşturuluyor. tek boyutlu 2 değişkenli bir liste. Çünkü np.arange(len(classes)) ile biz classes nesnesindeki değişken sayısını alıyoruz. classes nesnesini de hemen aşağıda class_names ile oluşturduğumuz listeyi classes'a atayarak elde ediyoruz. Ardından bu oluşturduğumuz tick_marks'ı hem plt.xticks(tick_marks, classes, rotation=45 hem de plt.yticks(tick_marks, classes) ifadesinde kullanarak diyoruz ki; x ekseni için tick_marks içindeki sınıf sayısı kadar alan oluştur, o alanlara 2. parametre olan classes'ı ver sırasıyla 0 ve 1 yani not diabetes, diabetes. x için 45 derece yana yatır, y ekseni için de yukardaki işlemlerin aynısını yap diyoruz.
+
+Ardından fmt ile başlayan kodla birlikte:
+Confusion matrix'in her hücresine metin etiketlerini eklemek ve görselleştirmek için uğraşıyoruz.
+
+fmt = '.2f' if normalize else 'd': Bu satır, metin formatını belirler. Eğer matris normalize edilmişse (yani her hücre değeri [0, 1] aralığındaysa), ondalık sayı formatı '%.2f' olarak ayarlanır. Eğer matris normalize edilmemişse, tam sayı formatı 'd' olarak ayarlanır.
+'d' format kodu, sayıları ondalıksız tam sayı olarak biçimlendirir. Yani, format(cm[i, j], 'd') ifadesi, karmaşıklık matrisinin belirli bir hücresindeki sayıyı ondalıksız tam sayı olarak biçimlendirir. Bu kullanım, normalize edilmemiş karmaşıklık matrisinin hücrelerinin içeriğini basit bir sayı olarak göstermek için kullanılır.
+
+thresh = cm.max() / 2.: Bu satır, metin etiketlerinde kullanılacak renk değişimini belirler. Bu değer, confusion matrisindeki maksimum değerin yarısı olarak belirlenir. Bu, hücre değerlerini görselleştirmede kullanılan renklerin arka plan renginden daha farklı olmasını sağlar.
+
+for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):: Bu döngü, her hücreye metin etiketi eklemek için karmaşıklık matrisinin boyutları üzerinde döner.
+
+plt.text(j, i, format(cm[i, j], fmt), horizontalalignment="center", color="white" if cm[i, j] > thresh else "black"): Bu satır, belirli bir hücreye metin etiketi ekler. i ve j indeksleri, matrisin satır ve sütun indekslerini temsil eder. format(cm[i, j], fmt) ifadesi, hücrenin değerini formatlar ve metin olarak döndürür. horizontalalignment="center" ifadesi, metin etiketini hücrenin ortasına hizalar. color="white" if cm[i, j] > thresh else "black" ifadesi, metin etiketinin rengini belirler. Eğer hücre değeri thresh değerinden büyükse (yani pozitif tahmin sayısı yarıyı aşıyorsa), metin rengi beyaz olur; aksi durumda siyah olur.
+
+plt.tight_layout(): Bu satır, grafiği düzgün bir şekilde yerleştirir.
+
+plt.ylabel('True label') ve plt.xlabel('Predicted label'): Bu satırlar, y ekseni için etiket (True label) ve x ekseni için etiket (Predicted label) ekler.
+
+Ardından cnf_matrix adıyla metrics modülündeki confusion_matrix fonksiyonunu kullanarak tahminlerinizin karmaşıklık matrisini oluşturur. data1['Outcome'] gerçek sınıf değerlerini içeren sütun, Tree_Predict ise tahmin edilen sınıf değerlerini içeren sütundur.
+ilk parametre gerçek değerler, 2. parametre tahmin değerleri yazılır.
+
+np.set_printoptions(precision=2): Bu satır, numpy kütüphanesinin set_printoptions fonksiyonunu kullanarak sayıları yazdırmada ondalık kısımları en fazla 2 hane olarak biçimlendirir.
+
+class_names = ['Not diabetes', 'Diabetes']: Bu satır, sınıf adlarını içeren bir liste tanımlar. İlk öğe "Not diabetes" (diyabet olmayanlar) için, ikinci öğe ise "Diabetes" (diyabetli) için kullanılır.
+bu class_names yukarda dediğimiz gibi classes değişkenine atanır ki len(classes) kadar bölme oluşturulsun, hatırlayıcağınız üzere.
+
+plt.figure(): Bu satır, yeni bir matplotlib figürü oluşturur.
+
+plot_confusion_matrix(cnf_matrix, classes=class_names, title='Confusion matrix, without normalization'): Bu satır, oluşturulan karmaşıklık matrisini ve sınıf adlarını içeren class_names listesini kullanarak karmaşıklık matrisini çizmek için plot_confusion_matrix fonksiyonunu çağırır. Bu çizim normalize edilmemiş karmaşıklık matrisini gösterir.
+
+plt.figure(): Bu satır, yeni bir matplotlib figürü oluşturur.
+
+plot_confusion_matrix(cnf_matrix, classes=class_names, normalize=True, title='Normalized confusion matrix'): Bu satır, normalize edilmiş karmaşıklık matrisini çizmek için tekrar plot_confusion_matrix fonksiyonunu çağırır. Bu çizim normalize edilmiş karmaşıklık matrisini gösterir.
+
+Zaten normalizasyon için gereken ve genel olarak gereken tüm ayarlamaları yukarda fonksiyon için yapmıştık. 
+
+----------------------------------------------------------------------------------------------------
+Bu hücreyi birde deftere aldığım notlarla açıklamak istiyorum. Eğer başka bir anlatıma ihtiyacınız yoksa, meseleyi anladıysanız bu kısmı geçebilirsiniz.
+
+Bu hücredeki kod confusion matriksinin görselleştirilmesi için bir işlev ve bu işleve dayalı olarak confusion matrisinin normalleştirilmiş ve normalleştirilmemiş versiyonlarını çiziyor. Confusion matrix, sınıflandırma modellerinin performansını değerlendirmek için kullanılan bir araçtır.
+
++itertools'u importluyoruz.
++plot_confusion_matrix fonksiyonunu oluşturuyoruz. Bu işlev, confusion matrixini görselleştirmek için kullanılır. İşlevin parametreleri şunlardır:
+
+cm = confusion matrix(Burda yazdığımız cm daha önceden tanımlı bir değişken. ve bu önceden tanımlanan değişkene confusion matrix ataması öğretilmiş). Ve bir model çıkartacağı için, veri görselleştirmesi yaptığı için ilk parametre.
+
+
+classes: Sınıf etiketlerini içeren bir liste(örneğin ['diabetes','not diabetes']).
+
+normalize: Confusion matrix'in normalleştirilip, normalleştirilmeyeceğini belirler. Scikit-learn 
+(sklearn.metrics) kütüphanesinde yer alır. Normalleştirilmiş matriste her satırın toplamı 1 olur. Eğer, =True olarak seçerseniz bu işlemi uygular, seçmezseniz(False) uygulamaz.
+
+normalleştirmenin tanımı da önemli. Kısaca; verileri belirli bir aralığa veya ölçeklere getirme işlemidir.
+
+***Özellikle veri analizi ve makine öğrenimi gibi alanlarda kullanılır. Normalleştirme, verilerin birbirleriyle karılaştırılabilir ve işlem yapılabilir hale getirilmesine yardımcı olur. Bir veri setindeki değerler genellikle farklı aralıklarda olabilir. Örneğin, bir özellik(feature) 0 ile 1000
+arasında değer alırken, diğer bir özellik -1 ile 1 arasında değerler alabilir. Bu durum, bazı algoritmaların veya analizlerin etkili şekilde çalışmasını engelleyebilir. Normalleştirme işlemi bu tür durumlarda devreye girer. Veri setinin her bir değeri, belirli bir ölçek aralığına veya dağılımına taşınır.*****
+
+-title: Görselleştirmenin başlığı
+-cmap: Renk haritası
+-cnf_matrix= metrics.confusion_matrix(data1['diabetes']),Tree_Predict) satırında gerçek etiketler ve tahmin edilen etiket değerleri tutarlılığını hesaplar ve bir confusion matrix haline getirir.
+
+Görselleştirme için hazırlıklar:
+class_names: Görselleştirme sırasında sınıf adlarını içeren bir liste belirler.
+np.set_printoptions(precision=2): Numpy ayarları ile ondalıklı sayıların basamak sayılarını ayarlar.
+
+Normalleştirilmemiş Confusion matrix Görselleştirme:
+=> plt.figure(): Yeni bir çizim figürü oluşturur.
+=>plt_confusion_matrix(cnf_matrix,classes=class_names,normalize=True, title = 'Normalized confusion matrix'). Normalleştirilmiş confusion matrixi çizdirir.
+----------------------------------------------------------------------------------------------------
+
+[38] Bu hücrede ise artık veriyle ilgili çıkarımlar, anlamlı sonuçlar yaratabilmek için sorgular yapıyoruz. Ve bu sorgular için elimizdeki sürekli olan değişkeni binary(ikili) değişkene dönüştürmemiz gerekiyordu. Biz bunu daha önceden yukardaki hücrelerde yapmıştık(Hücre 7). Burada bir kategorizasyon yapmamıza rağmen anlamlı bir sonuç alıyor muyuz? Henüz hayır. Bize tam bir ilişki söyleyebilmiş değil. 
+
+[39] Burda ise bir nevi temel atılıyor. İlerde yapıcağımız komplike sorguları nasıl yaptığımızı anlayabilin diye basit bir sorgu var. Bunun gibi basit birkaç sorguyu birleştirdiğimizde ve genele oranladığımızda anlamlı sonuçlar elde edebiliyor olacağız.
+
+[40] Burda ilk olarak ortalama insulin değerinden fazla değere sahip  hastaların toplam sayısını öğreniriz. Bilmemiz gereken tüm detaylar hücrede bulunuyor. Total diyabete sahip kişi sayısı, insulini ortalama değerden fazla olan kişilerin sayısı, diyabetin total popülasyon nüfusuna oranı,yüzdelik değeri. İnsulin değeri ortalama değerden yüksek olan kişilerin toplam diyabetli hasta sayısına oranı,
+rp.summary_cont(data1[["Outcome","Insulin"]]) kodu ile Outcome ve Insulin değeri için bize önemli değerleri ve  verir. N   Mean   SD   SE  95% Conf.  Interval gibi.
+
+ardından query1 ve query2 adlarında 2 tane sorgu yaparız. İnsulin değerlerinin ortalama değerden fazla olup olmamasına göre diyabet oldukları durumların sayısını çıkartırız.
+
+[41] higher_ins_diabetes=(query1/total_diabetes).mean()*100
+lower_ins_diabetes= (query2/total_diabetes).mean()*100 
+
+kodu ile yukardaki sorgu koşullarını sağlama durumlarını alır ortalamalarını alır ve toplam diyabet sayısına böldükten sonra 100 ile çarpınca elimize ortalama değer altında insulin değeri olan ve diyabeti olan bireylerin sayısına ve ortalama değerin üstünde insulin değeri olan- diyabeti olan bireylerin oranını ve sayısını elde etmiş oluruz. Ayrı tüm popülasyondaki yüzdelerini de elde ediyoruz.
+
+[42] Burda ise popülasyonun ortalama çocuk yapma oranından fazla çocuk yapan insanların sayısını elde ediyoruz.
+
+[43] Burda ise Insulin,Pregnancies'de class1 olanların ve Diyabet olanların toplamını buluyoruz.
+
+[44] Insulin,Pregnancies'de class1 olanların ve Diyabet olaların Toplamını öğreniriz.
+
+[45] Burda da Insulin,Pregnancies ve BMI'da class1 olanların ve Diyabet olaların Toplamını öğreniriz
+
+Bunları yapmamızın sebebi genel bir bakış atıp, önemli bir detay yakalayabiliyor muyuz? Bir analiz yapabilir miyiz? Mesele burda biraz corelation heatmap ile gördüklerimizi kod bazlı görebilmek. Bu ilişkileri yakalamanın birden fazla yöntemi vardır.
+
+[46] İlk olarak dtree adında tree.DecisionTreeClassifier() fonksiyonunu kullanırız. Ve karar ağacı işlemi uygularız.
+
+Ardından base_results adında bir değişken oluştururuz.
+= model_selection.cross_validate(dtree, data1[data1_x_bin], data1[Target], cv  = cv_split, return_train_score=True)
+
+model_selection.cross_validate() işlevi, belirtilen bir modelin çapraz doğrulama (cross-validation) sonuçlarını hesaplamak için kullanılır. Çapraz doğrulama, bir modelin performansını daha güvenilir bir şekilde değerlendirmek için veri setini parçalara ayırarak birden fazla eğitim ve test seti kombinasyonu oluşturma işlemidir.
+
+Bu işlev aşağıdaki parametreleri alır:
+
+estimator: Değerlendirilmek istenen model (örneğin, DecisionTreeClassifier gibi).
+X: Bağımsız değişkenlerin bulunduğu veri.
+y: Bağımlı değişken (hedef) veri.
+cv: Çapraz doğrulama için kullanılacak kat sayısı veya çapraz doğrulama jeneratörü.
+return_train_score: Eğer True olarak ayarlanırsa, eğitim skorları da döndürülür.
+Diğer parametreler: İlgili modelin eğitim ve test süreçlerini kontrol eden parametreler.
+Bu işlev sonucunda, modelin her bir çapraz doğrulama bölümünde eğitim ve test skorları, süreler ve benzeri performans ölçüleri elde edilir. Bu sonuçlar daha sonra modelin performansını değerlendirmek veya hiper-parametre ayarı yapmak için kullanılabilir.
+
+Biz bu hücrede model seçimi yaptık(karar ağacı), ardından bu seçtiğimiz modele çapraz doğrulama uyguladık, ve sonra .fit() fonksiyonu ile de modelimizi eğitip test ettik. 
+
+Burda dikkat etmemiz gereken şey model_selection.cross_validate() fonksiyonunun aldığı parametreler. Yukarda yazılı olan ifadeler default olarak verilen değerlerdi. Şimdi kodumuz üzerinden değerlendireceğiz.
+
+1.Parametre: dtree; burda ilk olarak seçilen modeli veriyoruz. dtree neydi desicion tree modelini tutan bir değişkendi. Bunun için şu hazır fonksiyonu kullanmıştık; tree.DesicionTreeClassifier
+
+2.Parametre: data1[data1_x_bin]. Buraya ise bağımsız değişkenler(Xler) gelir.
+
+3.Parametre: data1[Target]. Buraya da bağımlı değişken(Y) gelir.
+
+4.Parametre:  cv  = cv_split. Burda ise cross validation yapmasını söyleriz modele.
+
+5.Parametre: return_train_score=True.  Eğer True olarak ayarlanırsa, eğitim skorları da döndürülür.
+
+training_score değerleri, modelin eğitim verisi üzerinde ne kadar iyi performans gösterdiğini gösterir. Ancak, bunlar genellikle eğitim verisine aşırı uyum yapma (overfitting) durumunu da yansıtabilir. Eğer çapraz doğrulama sırasında eğitim skorları ile test skorları arasında büyük bir fark varsa, bu modelin aşırı uyum yapabileceğine işaret edebilir.
+
+Genel olarak, training_score değerleri modelin eğitim verisi üzerindeki performansını gösterir ve çapraz doğrulama sonuçlarının bir parçası olarak modele dair genel bir anlayış sağlamak için kullanılır.
+
+Ardından oluşturduğumuz dtree modelindeki yani aslında direkt olarak modelin parametrelerini dtree.get_params() kodu ile çağırırız. ve sırasıyla train_score ortalamalarını, test_score, ve 3 standart sapma uygulanmış test scorlarını verir.
+
+**3 standart sapma kuralı, bir değişkenin standart sapması ile hesaplanan bir sınırdır. Bu kurala göre, bir değişkenin ortalama değeri üzerine 3 standart sapma eklenip çıkarıldığında elde edilen aralık, genellikle "normal" değerlerin bulunduğu aralığı temsil ederken, bu aralığın dışında kalan değerler aykırı değer olarak kabul edilir. Bu yöntem, normal dağılıma sahip bir veri seti için geçerlidir.
+
+
+Ardından param_grid ile hiper parametre ayarı yapılır.
+
+Hiperparametreler, modelin davranışını ve performansını etkileyen parametrelerdir ve model oluşturulmadan önce belirlenmelidir.
+
+Şimdi bu hiperparametreleri ve belirlenen değerleri açıklayalım:
+
+criterion: Bilgi kazancını hesaplarken kullanılacak metriği belirler. "gini" veya "entropy" seçeneklerini alabilir. "gini" Gini impurity metriğini, "entropy" ise entropi metriğini kullanır.
+
+Bu parametrelerle alakalı daha fazla bilgi edinmek bence gerekli olduğundan;
+"Gini impurity" ve "entropy", karar ağacı algoritmalarında kullanılan iki farklı kriterdir ve bu kriterler kullanılarak düğümlerin bölünme noktaları seçilir. Bu kriterler, karar ağacının veri kümesini nasıl böleceğini ve hangi özellikleri kullanacağını belirlemeye yardımcı olur.
+
+Gini Impurity (Gini Belirsizliği): Gini impurity, bir düğümde rastgele seçilen bir örneğin yanlış sınıflandırılma olasılığını ölçer. Eğer bir düğümde tüm örnekler aynı sınıfa aitse (örneğin, tüm örnekler "evet" veya tüm örnekler "hayır" ise), Gini impurity değeri en düşüktür (0). Eğer örnekler farklı sınıflara aitse, Gini impurity değeri daha yüksek olacaktır.
+
+Entropy (Entropi): Entropi, bir düğümdeki örneklerin sınıf dağılımının düzensizliğini ölçer. Eğer bir düğümde tüm örnekler aynı sınıfa aitse, entropi değeri en düşüktür (0). Eğer örnekler farklı sınıflara aitse, entropi değeri daha yüksek olacaktır.
+
+Bu iki kriter de bir düğümün bölünme noktasını belirlemek için kullanılır. Ağaç büyüdükçe, her düğümde veri örnekleri daha saf (homojen) hale gelir ve böylece Gini impurity veya entropi değeri düşer. Karar ağacı algoritması, düğümleri bölmek için bu değerlerin en düşük olacağı özellikleri seçmeye çalışır. Yani, bu kriterler algoritmanın hangi özellikleri ve bölünme noktalarını seçeceğini belirlemesine yardımcı olur.
+
+
+max_depth: Karar ağacının en fazla kaç derinliğe sahip olabileceğini belirler. Değerler olarak 2, 4, 6, 8, 10 veya None (sınırlama yok) kullanılabilir.
+
+****"max_depth", bir karar ağacının en fazla kaç derinliğe sahip olabileceğini belirleyen bir hiperparametredir. Karar ağacı algoritması, veri kümesini sınıflandırmak için bir ağaç yapısı oluşturur. Her düğüm, bir özellik ve bir değer üzerinde bir bölünme yapar. Derinlik, ağacın kök düğümden en uzak yaprak düğüme kadar olan yolun adım sayısıdır.
+
+****Yani aslında burda yaptığı olay şu. Diyabet örneğinden gidecek olursak birinin diyabet olup olmadığına kaç özelliğe bakarak karar vericek. Hani biz bu modeli kendi elimizle yaptığımızda ne yapıyorduk: bir hücrede sadece insulin değerine bakıyorduk. Model insulin değerine bakıp bir kanıya varıyor diyelim. Ortalama insulin değerinden düşük mü? yüksek mi? Böyle yaparsa model ne kadar tutarlı olur? Bazı durumlarda çok tutarlı olabilecekken bazı durumlarda çok büyük hatalara sebep olabilir. O yüzden derinlik seçiminde kaç tane özellik ele alınacağını ve hangisinin en iyi sonuç vereceğini tüm hepsini deneyerek karar vermesidir.
+
+random_state: Rastgele sayı üretiminde kullanılan tohum (seed) değeridir. Aynı tohum değeri kullanılarak tekrarlanabilir sonuçlar elde edilebilir.
+
+Bu kod parçasında, "tune_model" adında bir GridSearchCV (Grid Search Cross Validation) nesnesi oluşturuluyor ve karar ağacı (DecisionTreeClassifier) modelini hiper-parametrelerini farklı kombinasyonlarla ayarlayarak en iyi performansı elde etmeye çalışıyoruz. İşte satır satır ne yaptığını açıklayan bu kod parçası:
+
+tune_model = model_selection.GridSearchCV(tree.DecisionTreeClassifier(), param_grid=param_grid, scoring='roc_auc', cv=cv_split, return_train_score=True)
+
+tune_model: Oluşturulan GridSearchCV nesnesine verilen isim.
+model_selection.GridSearchCV: Scikit-learn kütüphanesinin GridSearchCV sınıfını kullanarak bir hiper-parametre ayarlama işlemi başlatıyoruz.
+tree.DecisionTreeClassifier(): Karar ağacı modeli. 
+param_grid=param_grid: Ayarlamak istediğimiz hiper-parametrelerin kombinasyonları. param_grid değişkeni önceden belirlenmişti.
+scoring='roc_auc': Modelin performansını değerlendirmek için kullanılacak metrik. Burada ROC AUC kullanılıyor.
+cv=cv_split: Çapraz doğrulama (cross-validation) için kullanılacak bölme sayısı veya bölmelerin belirlenmesi için bir nesne. Bu, modelin performansını daha iyi değerlendirmek için veriyi farklı alt kümelere böler.
+return_train_score=True: Eğitim verisi üzerindeki performans skorlarını da kaydet.
+tune_model.fit(data1[data1_x_bin], data1[Target])
+
+.fit(): GridSearchCV nesnesini veriye uyum sağlatma işlemi yapar. Burada veri, "data1_x_bin" özelliklerini içeriyor ve "Target" sütunu ise hedef değişkeni temsil ediyor.
+Bu kod, belirtilen hiper-parametre kombinasyonlarıyla karar ağacı modelini eğitecek ve performansını değerlendirecektir. GridSearchCV, belirtilen hiper-parametrelerin farklı kombinasyonlarını deneyerek en iyi ROC AUC değerini veren kombinasyonu seçecektir. Bu sayede en iyi performansı sağlayan hiper-parametre değerleri bulunmuş olur.
+
+Ardından en iyi modelin parametreleri yazdırılır, train_score ortalaması, test_score ortalaması ve 3 kere standart sapması alınmış test score'u yazdırılır.
+
+[47] correlation_heatmap(MLA_predict) kodu ile tüm model tahminlerinin korelasyonu görselleştirilir.
+Algoritmaların tahminleri birbirleriyle kıyaslanır.
+
+[48] Bu kod parçası, farklı makine öğrenimi modellerini bir araya getirerek "Hard Voting" ve "Soft Voting" sınıflandırıcılarını oluşturuyor. Bu yöntemler, farklı modellerin tahminlerini bir araya getirerek daha güçlü bir tahminleme yapmayı amaçlar. İşte bu kod parçasının detaylı açıklaması:
+
+vote_est: Oluşturulacak sınıflandırıcıların ve bu sınıflandırıcıların isimlerinin bir liste halinde tanımlandığı bölüm.
+
+Her bir çift, bir model adını ve o modeli tanımlayan bir sınıflandırıcıyı içerir.
+Örneğin, ('ada', ensemble.AdaBoostClassifier()) adında bir çift, "ada" adında bir modelin AdaBoost sınıflandırıcı ile tanımlandığını gösterir.
+Liste içinde farklı modellerin sınıflandırıcıları ve isimleri yer alır.
+vote_hard: Hard Voting sınıflandırıcısının oluşturulduğu bölüm.
+
+estimators=vote_est: Oluşturulan "vote_est" listesi içerisindeki modelleri bir araya getirerek bir Hard Voting sınıflandırıcısı oluşturulur.
+voting='hard': Hard Voting yöntemi kullanılır, yani en fazla oy alan tahmin sınıflandırmanın sonucu olur.
+Bu sınıflandırıcı eğitilir ve çapraz doğrulama (cross-validation) ile performansı değerlendirilir.
+
+vote_soft: Soft Voting sınıflandırıcısının oluşturulduğu bölüm.
+
+estimators=vote_est: Oluşturulan "vote_est" listesi içerisindeki modelleri bir araya getirerek bir Soft Voting sınıflandırıcısı oluşturulur.
+voting='soft': Soft Voting yöntemi kullanılır, yani tahminlerin olasılık değerleri ağırlıklı olarak toplanır ve sonuç hesaplanır.
+Bu sınıflandırıcı eğitilir ve çapraz doğrulama (cross-validation) ile performansı değerlendirilir.
+vote_hard_cv: Hard Voting sınıflandırıcısının çapraz doğrulama sonuçlarını içeren bir nesne.
+
+.cross_validate(): Oluşturulan Hard Voting sınıflandırıcısını veriye uydurur ve çapraz doğrulama sonuçlarını elde eder.
+vote_soft_cv: Soft Voting sınıflandırıcısının çapraz doğrulama sonuçlarını içeren bir nesne.
+
+.cross_validate(): Oluşturulan Soft Voting sınıflandırıcısını veriye uydurur ve çapraz doğrulama sonuçlarını elde eder.
+Sonuçlar ekrana yazdırılır:
+
+Her iki sınıflandırıcının eğitim ve test performansı ortalamaları yazdırılır.
+Aynı zamanda 3 standart sapma aralığında test performansının yayılması yazdırılır.
+Bu kod parçası, farklı modellerin tahminlerini bir araya getirerek daha güçlü bir tahminleme yapma amacını taşıyan Voting sınıflandırıcılarını oluşturur ve bu sınıflandırıcıların performansını değerlendirir.
+
+
+
+
+User
+hard voting ve soft voting nedir ondan da bahset
+ChatGPT
+Hard Voting ve Soft Voting, ensemble (topluluk) öğrenme yöntemlerinden biri olan "Voting Classifier" ile ilgilidir. Bu yöntemde, farklı modellerin tahminleri bir araya getirilerek daha güçlü ve genellemesi daha iyi bir tahmin yapılması amaçlanır.
+
+Hard Voting:
+Hard Voting'de, farklı modellerin tahminleri çoğunluk kurallarına göre birleştirilir. Yani, her modelin tahminlediği sınıf için en fazla oy alan sınıf tahmin olarak seçilir. Bu yöntemde, farklı modellerin tahminlerini bir oylama süreciyle birleştirilir ve en fazla oy alan sınıf seçilir.
+Hard Voting avantajı, farklı modellerin çeşitliliğini kullanarak genellemeyi artırmasıdır. Ancak, bu yöntem bazı modellerin daha güçlü tahmin yapabilme yeteneğini diğerlerine göre göz ardı edebilir.
+
+Soft Voting:
+Soft Voting'de ise, farklı modellerin tahminlerini olasılık değerleriyle ağırlıklı olarak birleştiririz. Her bir modelin tahminlerinin sınıflara ait olasılık değerleri toplanır ve ağırlıklı olarak ortalaması alınır. Bu yöntemde, tahminlerin olasılık değerleri daha ince ayrıntılarda birleştirildiği için daha fazla bilgi korunabilir.
+Soft Voting avantajı, tahminlerin olasılık değerlerini kullanarak daha geniş bir bakış açısıyla birleştirme yapabilmesidir. Bu yöntem, tahminlerin kesinliği yanı sıra güvenilirlik ve belirsizlik derecesini de göz önünde bulundurabilir.
+
+Genel olarak, Hard Voting ve Soft Voting yöntemleri ensemble yöntemlerinin birer varyasyonudur ve genellikle birden fazla modelin tahminlerini bir araya getirerek daha iyi sonuçlar elde etmek amacıyla kullanılırlar.
+
+[49] Artık kodun burasından sonrası, daha deneysel bir kısımdır. Üzerinde daha fazla çalışmam gereken bir ölüm ama yine de projeme eklemek istedim.
+
+  Bu kod parçası, farklı modellerin hiperparametrelerini ayarlayarak daha iyi sonuçlar elde etmek için bir tarama yapar. Bu tarama sürecinde "GridSearchCV" kullanılır. Ancak, bu kodun altındaki yorumlar ve uyarılar, kodun deneysel ve geliştirme amaçlı olduğunu ve üretim ortamında kullanılmak üzere olmadığını belirtiyor. İşte kodun ayrıntılı açıklaması:
+
+İlk kısımda, farklı hiperparametre kombinasyonları ile ayarlanmak istenen modellerin listesi (vote_est) tanımlanır.
+
+Daha sonra, hiperparametre taraması yaparken kullanılacak olası değerlerin listeleri tanımlanır. Örneğin, grid_n_estimator listesi, farklı n_estimators (tahminleyici sayısı) değerlerini içerir.
+
+vote_param adında bir liste oluşturulur. Bu liste, her bir modele ait hiperparametreler ve bu hiperparametrelerin ayarlanacak değerlerini içerir. Örneğin, 'ada__n_estimators': grid_n_estimator ifadesi, AdaBoost modelinin n_estimators hiperparametresinin grid_n_estimator listesindeki değerlerle ayarlanacağını belirtir.
+
+GridSearchCV ile hiperparametre taraması yapılır. grid_soft adında bir GridSearchCV nesnesi oluşturulur ve bu nesne, vote_soft adlı Soft Voting sınıflandırıcısını kullanarak tarama yapacaktır. param_grid parametresine, vote_param listesindeki hiperparametreler ve değerler çiftleri verilir.
+
+Son olarak, tarama sonuçları ve en iyi parametre kombinasyonları yazdırılır. Özellikle, mean_train_score, mean_test_score ve std_test_score gibi sonuçlar incelenir.
+
+Yukarıdaki kod parçasının altındaki yorumlara ve uyarılara dikkat etmek önemlidir. Bu kod, hiperparametre taramasının çok yoğun bir hesaplama gücü ve zaman gerektirdiği ve sadece deneysel amaçlar için yazıldığı anlamına gelir.
+
+Bilmekte fayda var;
+grid_n_estimator, hiperparametre taraması sırasında kullanılan bir liste veya dizidir. Bu liste, farklı model tahminleyici (estimator) sayıları yani n_estimators değerleri için olası seçenekleri içerir. Bu değerlerin her biri, modellerin kaç tahminleyici ile eğitileceğini belirler.
+
+Bu hiperparametre taraması genellikle "enseble" tipi modellerde kullanılır. n_estimators genellikle modellerin toplu olarak çalıştığı (örneğin, Random Forest, Gradient Boosting, AdaBoost gibi) modellerde kullanılır. Modellerin sayısının artırılması, genellikle daha iyi bir performans elde edilmesine yardımcı olabilir, ancak aynı zamanda hesaplama maliyetini de artırabilir.
+
+grid_n_estimator'un her bir değeri, tarama sırasında modelin kaç tahminleyici ile eğitileceğini belirler. Örneğin, grid_n_estimator = [100, 500, 1000] gibi bir liste, tarama sırasında 100, 500 ve 1000 tahminleyici değerleri ile modelleri eğitecektir.
+
+grid_n_estimator parametresi, scikit-learn kütüphanesine aittir ve bu kütüphanenin modellerinde, özellikle ensemble (topluluk) tabanlı modellerde kullanılır. Bu parametre, modellerin karmaşıklığını ve performansını belirlemek için oldukça önemlidir.
+
+[50] Bu hücrede ise 49. hücredeki aldığım hatanın sebebini anlamak için bir genel bakış amaçlı .info() kullandım. Çünkü hata satır sayılarının denk olmamasından kaynaklanıyor gibi bir sonuca vardı yapay zeka.
+
+[51] Bu kod bloğu, birden fazla makine öğrenimi modelini hiperparametre ayarlama işlemiyle optimize etmeyi amaçlayan bir kod parçasını içerir. Özellikle ensemble (topluluk) tabanlı modellerde kullanılan hiperparametreleri belirlemek için GridSearchCV yöntemi kullanılır. Ancak, kodun önemli bir uyarısı vardır: Bu kodun çalıştırılması hesaplama açısından oldukça yoğun ve zaman alıcıdır. Bu nedenle, deneyler ve geliştirme amaçları için tasarlanmıştır ve üretim ortamlarında kullanılması önerilmez.
+
+İşte kodun her bir adımının açıklaması:
+
+İlk başta, hiperparametre taraması için kullanılacak olası değer listeleri ve parametreleri belirliyoruz. Bu parametreler, farklı modeller için belirlenmiş. Örneğin, AdaBoostClassifier, BaggingClassifier, RandomForestClassifier gibi farklı modellerin hiperparametreleri farklıdır.
+
+vote_est adlı liste, farklı modelleri ve isimlerini içerir. Bu modellerin üzerinde hiperparametre taraması yapılacak.
+
+Tarama işleminin başladığı genel zamanı kaydediyoruz.
+
+Bir döngü içinde, vote_est listesindeki her bir model için aşağıdaki işlemleri gerçekleştiriyoruz:
+
+a. Modelin adını ve algoritmasını aldıktan sonra, GridSearchCV ile hiperparametre taraması yapılır. param değişkeni, ilgili modele özgü hiperparametre değerleri listesini içerir.
+
+b. best_search adlı GridSearch nesnesi, en iyi parametreleri bulmak için veri üzerinde cross-validation yapar.
+
+c. Taramanın ne kadar sürede tamamlandığı hesaplanır.
+
+d. En iyi parametreleri alarak, modelin parametrelerini güncelliyoruz.
+
+e. İşlemi yukarıdaki adımlarla her bir model için tekrarlıyoruz.
+
+Toplam tarama süresini hesaplayarak ekrana yazdırıyoruz.
+
+Bu kodun amacı, farklı makine öğrenimi modelleri için en iyi hiperparametreleri bulmaktır. GridSearch yöntemi, belirlenen parametre değerleri kombinasyonlarını deneyerek en iyi sonuçları bulmayı amaçlar. Ancak, belirtildiği gibi, bu kodun çalıştırılması ciddi bir hesaplama gücü gerektirebilir ve üretim ortamlarında kullanılması tavsiye edilmez.
+
+[52] Bu kod parçası, hiperparametre ayarlaması yapılmış ve en iyi sonuçları elde etmek için optimize edilmiş modellerin kullanıldığı sert ve yumuşak oy kullanma (voting) yöntemlerini değerlendirir.
+
+Hard Voting with Tuned Hyperparameters:
+
+grid_hard adında bir sert oy kullanma modeli (VotingClassifier) oluşturuyoruz. Bu modele vote_est listesindeki modelleri dahil ediyoruz ve oy kullanma yöntemini "hard" olarak belirliyoruz.
+model_selection.cross_validate fonksiyonunu kullanarak bu sert oy kullanma modelini çapraz doğrulama (cross-validation) ile değerlendiriyoruz. Bu adım, hem eğitim hem de test verileri üzerinde performans sonuçlarını hesaplar.
+Daha sonra, modeli eğitiyoruz (fit metodu).
+Eğitim ve test skorlarının ortalama değerlerini ve 3 kat standart sapmasını ekrana yazdırıyoruz.
+Son olarak, '-' işaretini kullanarak bir ayırıcı çizgi ekliyoruz.
+Soft Voting with Tuned Hyperparameters:
+
+grid_soft adında bir yumuşak oy kullanma modeli (VotingClassifier) oluşturuyoruz. Bu modele vote_est listesindeki modelleri dahil ediyoruz ve oy kullanma yöntemini "soft" olarak belirliyoruz.
+model_selection.cross_validate fonksiyonunu kullanarak bu yumuşak oy kullanma modelini çapraz doğrulama (cross-validation) ile değerlendiriyoruz.
+Modeli eğitiyoruz (fit metodu).
+Eğitim ve test skorlarının ortalama değerlerini ve 3 kat standart sapmasını ekrana yazdırıyoruz.
+Son olarak, '-' işaretini kullanarak bir ayırıcı çizgi ekliyoruz.
+Bu kod parçasının amacı, hiperparametreleri ayarlanmış modellerin sert ve yumuşak oy kullanma yöntemleriyle değerlendirilmesini sağlamaktır. Bu, hiperparametre ayarlamasıyla elde edilen en iyi sonuçları algoritmaların toplu olarak birleştirilmiş sonuçlarıyla değerlendirmek anlamına gelir.
+
+[53] Bu kod parçası, hiperparametreleri ayarlanmış modellerin kullanılarak bir doğrulama veri kümesi üzerinde tahminlerde bulunulmasını ve sonuçların bir CSV dosyasına kaydedilmesini sağlar. Aşağıda adım adım açıklamaları bulabilirsiniz:
+
+Veri Hazırlığı ve Bilgilendirme:
+
+İlk olarak, data_val veri kümesinin bilgilerini ve başlığını yazdırarak veri hakkında bilgi sahibi olunur.
+Handmade Decision Tree:
+
+mytree fonksiyonunu kullanarak el yapımı bir karar ağacı modeli oluşturulur ve Outcome sütununa tahmin sonuçları eklenir.
+Decision Tree with Tuned Hyperparameters:
+
+GridSearchCV kullanılarak hiperparametreleri ayarlanmış bir karar ağacı modeli (submit_dt) oluşturulur. GridSearchCV, hiperparametre kombinasyonlarını test eder ve en iyi sonuçları veren parametreleri belirler.
+En iyi parametreler ekrana yazdırılır.
+Outcome sütununa bu ayarlanmış modelin tahmin sonuçları eklenir.
+Bagging with Tuned Hyperparameters:
+
+Hiperparametreleri ayarlanmış bir BaggingClassifier (submit_bc) oluşturulur.
+En iyi parametreler ekrana yazdırılır.
+Outcome sütununa bu ayarlanmış modelin tahmin sonuçları eklenir.
+Extra Tree with Tuned Hyperparameters:
+
+Hiperparametreleri ayarlanmış bir ExtraTreesClassifier (submit_etc) oluşturulur.
+En iyi parametreler ekrana yazdırılır.
+Outcome sütununa bu ayarlanmış modelin tahmin sonuçları eklenir.
+Random Forest with Tuned Hyperparameters:
+
+Hiperparametreleri ayarlanmış bir RandomForestClassifier (submit_rfc) oluşturulur.
+En iyi parametreler ekrana yazdırılır.
+Outcome sütununa bu ayarlanmış modelin tahmin sonuçları eklenir.
+Ada Boosting with Tuned Hyperparameters:
+
+Hiperparametreleri ayarlanmış bir AdaBoostClassifier (submit_abc) oluşturulur.
+En iyi parametreler ekrana yazdırılır.
+Outcome sütununa bu ayarlanmış modelin tahmin sonuçları eklenir.
+Gradient Boosting with Tuned Hyperparameters:
+
+Hiperparametreleri ayarlanmış bir GradientBoostingClassifier (submit_gbc) oluşturulur.
+En iyi parametreler ekrana yazdırılır.
+Outcome sütununa bu ayarlanmış modelin tahmin sonuçları eklenir.
+Extreme Boosting with Tuned Hyperparameters:
+
+Hiperparametreleri ayarlanmış bir XGBClassifier (submit_xgb) oluşturulur.
+En iyi parametreler ekrana yazdırılır.
+Outcome sütununa bu ayarlanmış modelin tahmin sonuçları eklenir.
+Hard Voting Classifier with Tuned Hyperparameters:
+
+Sert oy kullanma yöntemi ile tahminler yapılır. İlk önce vote_hard modeli ve ardından grid_hard modeli kullanılır.
+Outcome sütununa tahmin sonuçları eklenir.
+Soft Voting Classifier with Tuned Hyperparameters:
+Yumuşak oy kullanma yöntemi ile tahminler yapılır. İlk önce vote_soft modeli ve ardından grid_soft modeli kullanılır.
+Outcome sütununa tahmin sonuçları eklenir.
+Sonuçları CSV Dosyasına Kaydetme:
+Elde edilen tahmin sonuçları data_val veri kümesine eklenir.
+Bu tahmin sonuçları submit adlı bir DataFrame'e kaydedilir ve "submit2.csv" adlı bir CSV dosyasına yazılır.
+Doğrulama Veri Dağılımı:
+Outcome sütununun dağılımını ekrana yazdırarak tahmin sonuçlarının sınıf dağılımını kontrol edebilirsiniz.
+Rastgele 10 örnek tahmin sonucu ekrana yazdırılır.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
